@@ -1,1 +1,5 @@
 /settings.ini
+/stock-webapp.code-workspace
+
+__pycache__/
+app/models/database/__pycache__/

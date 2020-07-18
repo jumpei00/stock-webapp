@@ -3,3 +3,4 @@
 
 __pycache__/
 app/models/database/__pycache__/
+app/models/backtest/__pycache__/

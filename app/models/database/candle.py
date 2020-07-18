@@ -1,7 +1,6 @@
 import logging
 
 from sqlalchemy import Column
-from sqlalchemy import desc
 from sqlalchemy import DateTime
 from sqlalchemy import Float
 from sqlalchemy.types import Float as Float_type

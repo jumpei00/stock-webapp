@@ -2,6 +2,7 @@ import logging
 
 from sqlalchemy import Column
 from sqlalchemy import DateTime
+from sqlalchemy import desc
 from sqlalchemy import Float
 from sqlalchemy.types import Float as Float_type
 from sqlalchemy.exc import IntegrityError
@@ -30,7 +31,8 @@ class StockData(Base):
             'open': self.open,
             'high': self.high,
             'low': self.low,
-            'close': self.close}
+            'close': self.close,
+            'volume': self.volume}
 
     @classmethod
     def create(cls, stock_df):
@@ -51,9 +53,20 @@ class StockData(Base):
         return candle
 
     @classmethod
-    def get_all_candles(cls, limit=100):
+    def get_some_candles(cls, limit=100):
         with session_scope() as session:
-            candles = session.query(cls).limit(limit).all()
+            candles = session.query(cls).order_by(
+                desc(cls.date)).limit(limit).all()
         if candles is None:
             return None
+        candles.reverse()
+        return candles
+
+    @classmethod
+    def get_all_candles(cls):
+        with session_scope() as session:
+            candles = session.query(cls).order_by(desc(cls.date)).all()
+        if candles is None:
+            return None
+        candles.reverse()
         return candles

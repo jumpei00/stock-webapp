@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <title>Stock Trading Chart</title>
+        <style>
+            #dashboard_div {
+                width: 600px;
+                border: 1px solid #ccc;
+            }
+
+            #chart_div {
+                height: 400px;
+                border-bottom: 1px solid #ccc;
+            }
+        </style>
+        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script type="text/javascript">
+            google.charts.load('current', { 'packages': ['corechart', 'controls'] });
+
+            var config = {
+                stock_code: {
+                    default: 'VOO'
+                }
+            }
+
+            function send_to_webserver() {
+                var params = {
+                    "stock_code": config.stock_code.default
+                }
+
+                $.get("/candle", params).done(function (data) {
+                    var data_table = new google.visualization.DataTable();
+                    var google_chart_data = [];
+                    var candles = data['candles'];
+
+                    for (var i = 0; i < candles.length; i++) {
+                        var candle = candles[i];
+                        var date = new Date(candle.time);
+                        var datas = [date, candle.low, candle.open, candle.close, candle.high, candle.volume];
+                        google_chart_data.push(datas)
+                    }
+
+                    data_table.addColumn('date', 'Date');
+                    data_table.addColumn('number', 'Low');
+                    data_table.addColumn('number', 'Open');
+                    data_table.addColumn('number', 'Close');
+                    data_table.addColumn('number', 'High');
+                    data_table.addColumn('number', 'Volume');
+
+                    data_table.addRows(google_chart_data);
+                    drawChart(data_table);
+                })
+            }
+
+            function drawChart(data_table) {
+                var chartDiv = document.getElementById('chart_div');
+                var charts = [];
+                var dashboard = new google.visualization.Dashboard(chartDiv);
+                var mainChart = new google.visualization.ChartWrapper({
+                    chartType: 'ComboChart',
+                    containerId: 'chart_div',
+                    options: {
+                        hAxis: { 'slantedText': false },
+                        legend: { 'position': 'none' },
+                        candlestick: {
+                            fallingColor: { strokeWidth: 0, fill: '#a52714' },
+                            risingColor: { strokeWidth: 0, fill: '#0f9d58' }
+                        },
+                        seriesType: "candlesticks",
+                        series: {}
+                    },
+                    view: {
+                        columns: [
+                            {
+                                calc: function (d, rowIndex) {
+                                    return d.getFormattedValue(rowIndex, 0);
+                                },
+                                type: 'string'
+
+                            }, 1, 2, 3, 4
+                        ]
+
+                    }
+
+                });
+                var controlWrapper = new google.visualization.ControlWrapper({
+                    'controlType': 'ChartRangeFilter',
+                    'containerId': 'filter_div',
+                    'options': {
+                        'filterColumnIndex': 0,
+                        'ui': {
+                            'chartType': 'LineChart',
+                            'chartView': {
+                                'columns': [0, 4]
+                            }
+                        }
+                    }
+                });
+
+                charts.push(mainChart);
+                dashboard.bind(controlWrapper, charts);
+                dashboard.draw(data_table);
+            }
+
+            window.onload = function () {
+                send_to_webserver()
+            }
+        </script>
+    </head>
+
+    <body>
+        <h1>Stock Technical analysis Site</h1>
+        <div id="dashboad_div">
+            <div id="chart_div"></div>
+        </div>
+    </body>
+
+</html>

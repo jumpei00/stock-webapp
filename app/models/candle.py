@@ -7,9 +7,9 @@ from sqlalchemy import Float
 from sqlalchemy.types import Float as Float_type
 from sqlalchemy.exc import IntegrityError
 
-from app.models.database.base import Base
-from app.models.database.base import engine
-from app.models.database.base import session_scope
+from app.models.base import Base
+from app.models.base import engine
+from app.models.base import session_scope
 
 
 logger = logging.getLogger(__name__)

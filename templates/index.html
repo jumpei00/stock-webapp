@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
     <head>
         <meta charset="UTF-8">
         <title>Stock Trading Chart</title>
@@ -13,6 +12,10 @@
             #chart_div {
                 height: 400px;
                 border-bottom: 1px solid #ccc;
+            }
+
+            #filter_div {
+                height: 50px;
             }
         </style>
         <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
@@ -32,30 +35,29 @@
                 }
 
                 $.get("/candle", params).done(function (data) {
-                    var data_table = new google.visualization.DataTable();
+                    var dataTable = new google.visualization.DataTable();
                     var google_chart_data = [];
                     var candles = data['candles'];
 
                     for (var i = 0; i < candles.length; i++) {
                         var candle = candles[i];
-                        var date = new Date(candle.time);
+                        var date = new Date(candle.date);
                         var datas = [date, candle.low, candle.open, candle.close, candle.high, candle.volume];
                         google_chart_data.push(datas)
                     }
 
-                    data_table.addColumn('date', 'Date');
-                    data_table.addColumn('number', 'Low');
-                    data_table.addColumn('number', 'Open');
-                    data_table.addColumn('number', 'Close');
-                    data_table.addColumn('number', 'High');
-                    data_table.addColumn('number', 'Volume');
-
-                    data_table.addRows(google_chart_data);
-                    drawChart(data_table);
+                    dataTable.addColumn('date', 'Date');
+                    dataTable.addColumn('number', 'Low');
+                    dataTable.addColumn('number', 'Open');
+                    dataTable.addColumn('number', 'Close');
+                    dataTable.addColumn('number', 'High');
+                    dataTable.addColumn('number', 'Volume');
+                    dataTable.addRows(google_chart_data);
+                    drawChart(dataTable);
                 })
             }
 
-            function drawChart(data_table) {
+            function drawChart(dataTable) {
                 var chartDiv = document.getElementById('chart_div');
                 var charts = [];
                 var dashboard = new google.visualization.Dashboard(chartDiv);
@@ -86,6 +88,11 @@
                     }
 
                 });
+                charts.push(mainChart);
+
+                var options = mainChart.getOptions();
+                var view = mainChart.getView();
+
                 var controlWrapper = new google.visualization.ControlWrapper({
                     'controlType': 'ChartRangeFilter',
                     'containerId': 'filter_div',
@@ -100,9 +107,8 @@
                     }
                 });
 
-                charts.push(mainChart);
                 dashboard.bind(controlWrapper, charts);
-                dashboard.draw(data_table);
+                dashboard.draw(dataTable);
             }
 
             window.onload = function () {
@@ -110,12 +116,11 @@
             }
         </script>
     </head>
-
     <body>
         <h1>Stock Technical analysis Site</h1>
-        <div id="dashboad_div">
+        <div id="dashboard">
             <div id="chart_div"></div>
+            <div id="filter_div"></div>
         </div>
     </body>
-
 </html>

@@ -1,4 +1,4 @@
-from app.models.database.candle import StockData
+from app.models.candle import StockData
 
 
 class DataFrameCandle(object):

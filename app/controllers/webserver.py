@@ -25,10 +25,9 @@ def index():
 @app.route('/candle', methods=['GET'])
 def cnadle_api():
     df = DataFrameCandle()
-    df.set_all_candle_cls()
 
     return jsonify(df.values), 200
 
 
 def run():
-    app.run(host='127.0.0.1', port=settings.web_port, threaded=True)
+    app.run(host='0.0.0.0', port=settings.web_port, threaded=True)

@@ -6,7 +6,7 @@ from app.technical.serializer import Serializer
 from utils.utils import nan_to_zero
 
 
-class Sma(Serializer):
+class SMA(Serializer):
     def __init__(self, closes, period):
         self.period = period
         self.values = self.sma(closes=closes)
@@ -16,7 +16,7 @@ class Sma(Serializer):
         return nan_to_zero(values).tolist()
 
 
-class Ema(Serializer):
+class EMA(Serializer):
     def __init__(self, closes, period):
         self.period = period
         self.values = self.ema(closes=closes)
@@ -33,8 +33,10 @@ class BBands(Serializer):
         self.up, self.mid, self.down = self.bbands(closes=closes)
 
     def bbands(self, closes):
+        if not closes:
+            return [], [], []
         up, mid, down = talib.BBANDS(
-            np.asarray(self.closes), self.n, self.k, self.k, 0
+            np.asarray(closes), self.n, self.k, self.k, 0
         )
         up_list = nan_to_zero(up).tolist()
         mid_list = nan_to_zero(mid).tolist()
@@ -48,6 +50,8 @@ class IchimokuCloud(Serializer):
             self.senkou_b, self.chikou = self.ichimoku_cloud(in_real=closes)
 
     def ichimoku_cloud(self, in_real):
+        if not in_real:
+            return [], [], [], [], []
         length = len(in_real)
         tenkan = [0] * min(9, length)
         kijun = [0] * min(26, length)

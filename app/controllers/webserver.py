@@ -9,7 +9,7 @@ from app.models.base import Session
 import settings
 
 
-app = Flask(__name__, template_folder='../../templates')
+app = Flask(__name__, static_folder='../../static', template_folder='../../templates')
 
 
 @app.teardown_appcontext

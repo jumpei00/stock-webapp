@@ -3,12 +3,12 @@ import configparser
 conf = configparser.ConfigParser()
 conf.read('settings.ini')
 
-default = conf['stock_code']['default']
+stock_code_default = conf['stock_code']['default']
 kabutan_URL = conf['stock_code']['kabutan_URL']
 
 db_name = conf['db']['name']
 db_driver = conf['db']['driver']
 
-web_port = conf['web']['port']
+web_port = int(conf['web']['port'])
 
-backtest_period = conf['backtest']['period']
+duration_defalut = int(conf['duration']['default'])

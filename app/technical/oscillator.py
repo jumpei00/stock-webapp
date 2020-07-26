@@ -78,6 +78,8 @@ class STOCH(Serializer):
         self.fastk_period = fastk_period
         self.slowk_period = slowk_period
         self.slowd_period = slowd_period
+        self.slowk, self.slowd = self.stoch(
+            highs=highs, lows=lows, closes=closes)
 
     def stoch(self, highs, lows, closes):
         if not highs or not lows or not closes:

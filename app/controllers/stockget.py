@@ -5,14 +5,15 @@ import pandas_datareader.data as web
 import re
 import requests
 
+from app.models.candle import StockData
 import settings
 
 logger = logging.getLogger(__name__)
 
 
 class GetStockPrice(object):
-    def __init__(self, code=settings.default):
-        self.code = code
+    def __init__(self, stock_code=settings.stock_code_default):
+        self.code = stock_code
         self.kabutan_URL = settings.kabutan_URL
         self.kabutan_col_dic = {0: 'Date', 1: 'Open',
                                 2: 'High', 3: 'Low', 4: 'Close', 5: 'Volume'}
@@ -54,3 +55,7 @@ class GetStockPrice(object):
         kabutan_data.set_index('Date', inplace=True)
 
         return kabutan_data
+
+    def save_in_database(self):
+        stock_data = self.get_stock_data
+        StockData.create(stock_df=stock_data)

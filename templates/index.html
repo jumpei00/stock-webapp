@@ -7,13 +7,69 @@
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
         <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='js/config.js') }}"></script>
         <script type="text/javascript" src="{{ url_for('static', filename='js/script.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='js/main.js') }}"></script>
     </head>
 
     <body>
-        <h1>Stock Technical analysis Site</h1>
+        <h2>Stock Technical analysis Site</h2>
+        <div>
+            StockCode<input id="inputCode" type="text" value="1570" style="width: 40px;">
+            Duration<input id="inputDuration" type="text" value="365" style="width: 40px;">
+            <button id="inputGet">GET</button>
+        </div>
+        <div>
+            SMA <input id="inputSma" type="checkbox">
+            Period<input id="inputSmaPeriod1" type="text" value="7" style="width: 15px;">
+            <input id="inputSmaPeriod2" type="text" value="14" style="width: 15px;">
+            <input id="inputSmaPeriod3" type="text" value="50" style="width: 15px;">
+        </div>
+        <div>
+            EMA <input id="inputEma" type="checkbox">
+            Period<input id="inputEmaPeriod1" type="text" value="7" style="width: 15px;">
+            <input id="inputEmaPeriod2" type="text" value="14" style="width: 15px;">
+            <input id="inputEmaPeriod3" type="text" value="50" style="width: 15px;">
+        </div>
+        <div>
+            BBands <input id="inputBBands" type="checkbox">
+            N <input id="inputBBandsN" type="text" value="20" style="width: 15px;">
+            K <input id="inputBBandsK" type="text" value="2" style="width: 15px;">
+        </div>
+        <div>
+            Ichimoku <input id="inputIchimoku" type="checkbox">
+        </div>
+        <div>
+            Volume <input id="inputVolume" type="checkbox">
+        </div>
+        <div>
+            RSI <input id="inputRsi" type="checkbox">
+            Period <input id="inputRsiPeriod" type="text" value="14" style="width: 15px;">
+        </div>
+        <div>
+            MACD <input id="inputMacd" type="checkbox">
+            Period<input id="inputMacdPeriod1" type="text" value="12" style="width: 15px;">
+            <input id="inputMacdPeriod2" type="text" value="26" style="width: 15px;">
+            <input id="inputMacdPeriod3" type="text" value="9" style="width: 15px;">
+        </div>
+        <div>
+            Williams%R <input id="inputWillr" type="checkbox">
+            Period <input id="inputWillrPeriod" type="text" value="14" style="width: 15px;">
+        </div>
+        <div>
+            Fast Stochastic <input id="inputStochf" type="checkbox">
+            Period<input id="inputStochfPeriod1" type="text" value="9" style="width: 15px;">
+            <input id="inputStochfPeriod2" type="text" value="3" style="width: 15px;">
+        </div>
+        <div>
+            Slow Stochastic <input id="inputStoch" type="checkbox">
+            Period<input id="inputStochPeriod1" type="text" value="9" style="width: 15px;">
+            <input id="inputStochPeriod2" type="text" value="3" style="width: 15px;">
+            <input id="inputStochPeriod3" type="text" value="3" style="width: 15px;">
+        </div>
         <div id="dashboard">
             <div id="chart_div"></div>
+            <div id="technical_div"></div>
             <div id="filter_div"></div>
         </div>
     </body>

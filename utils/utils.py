@@ -1,6 +1,13 @@
 import numpy as np
 
 
+def bool_from_str(text: str) -> bool:
+    if text.lower() == 'true':
+        return True
+    if text.lower() == 'false':
+        return False
+
+
 def empty_to_none(input_list):
     if not input_list:
         return None

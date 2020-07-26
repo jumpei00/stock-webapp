@@ -1,11 +1,13 @@
 from app.models.candle import StockData
 from app.technical import trend
 from app.technical import oscillator
+from utils.utils import empty_to_none
+import settings
 
 
 class DataFrameCandle(object):
-    def __init__(self):
-        self.candles = StockData.get_all_candles()
+    def __init__(self, duration=settings.duration_defalut):
+        self.candles = StockData.get_some_candles(limit=duration)
         self.sma = []
         self.ema = []
         self.bbands = trend.BBands(closes=[], n=0, k=0)
@@ -24,7 +26,16 @@ class DataFrameCandle(object):
     @property
     def values(self):
         return {
-            'candles': [c.values for c in self.candles]
+            'candles': [c.values for c in self.candles],
+            'smas': empty_to_none([s.value for s in self.sma]),
+            'emas': empty_to_none([s.value for s in self.ema]),
+            'bbands': self.bbands.value,
+            'ichimoku': self.ichimoku_cloud.value,
+            'rsi': self.rsi.value,
+            'macd': self.macd.value,
+            'willr': self.willr.value,
+            'stochf': self.stochf.value,
+            'stoch': self.stoch.value
         }
 
     @property

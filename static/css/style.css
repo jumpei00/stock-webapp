@@ -1,13 +1,22 @@
 #dashboard_div {
-                width: 600px;
-                border: 1px solid #ccc;
-            }
+    width: 600px;
+    border: 1px solid #ccc;
+}
 
-            #chart_div {
-                height: 500px;
-                border-bottom: 1px solid #ccc;
-            }
+#chart_div {
+    height: 500px;
+    border-bottom: 1px solid #ccc;
+}
 
-            #filter_div {
-                height: 50px;
-            }
+#filter_div {
+    height: 50px;
+}
+
+.technical_title{
+    margin: 10px;
+    color: gray;
+}
+
+.bottom_chart{
+    border-bottom: 1px solid #ccc;
+}

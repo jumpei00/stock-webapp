@@ -1,5 +1,6 @@
 from datetime import datetime
 import pandas as pd
+import logging
 
 from dict2obj import Dict2Obj
 
@@ -8,14 +9,16 @@ from app.technical.backtest import BackTestingSerializer
 from app.models.events import SignalEventController
 import constants
 
+logger = logging.getLogger(__name__)
+
 
 class AI(object):
     def __init__(self, code):
         self.code = code
-        self.df = DataFrameCandle(code=code)
+        self.df = DataFrameCandle(code=self.code)
         self.back_test_params = self.df.back_test_params.get_params
         self.backtest_serializer = BackTestingSerializer(
-            code=code, candles=self.df.candles,
+            code=self.code, candles=self.df.candles,
             highs=self.df.highs, lows=self.df.lows, closes=self.df.closes)
 
     @property
@@ -87,12 +90,12 @@ class AI(object):
             sell_thread=latest_params.stoch_sell_thread,
             base=constants.STOCH, save=True)
 
-        today_trade = self.today_trade()
+        today_trades = self.today_trade()
 
-        return today_trade
+        return today_trades
 
     def today_trade(self):
-        today_trades = constants.TODAY_TRADES
+        today_trades = constants.TODAY_TRADES.copy()
         base_list = constants.BASE_LIST
         latest_candle = self.df.candles[-1]
 
@@ -185,31 +188,17 @@ class AI(object):
             )
 
         backtesting_time = datetime.now()
-        optimize_params_list = [self.code]
-
-        # the first boolean of each list is 'enable'
-        ema_params = [False, ema_performance,
-                      ema_short_period, ema_long_period]
-        bb_params = [False, bb_performance, bb_n, bb_k]
-        ichimoku_params = [False, ichimoku_performance]
-        rsi_params = [False, rsi_performance, rsi_period,
-                      rsi_buy_thread, rsi_sell_thread]
-        macd_params = [False, macd_performance, macd_fast_period,
-                       macd_slow_period, macd_signal_period]
-        willr_params = [False, willr_performance, willr_period,
-                        willr_buy_thread, willr_sell_thread]
-        stochf_params = [False, stochf_performance, stochf_fastk_period,
-                         stochf_fastd_period, stochf_buy_thread, stochf_sell_thread]
-        stoch_params = [False, stoch_performance, stoch_fastk_period, stoch_slowk_period,
-                        stoch_slowd_period, stoch_buy_thread, stoch_sell_thread]
-
-        params = [ema_params, bb_params, ichimoku_params, rsi_params,
-                  macd_params, willr_params, stochf_params, stoch_params]
-
-        for each_params in params:
-            if each_params[1] > 100.00:
-                each_params[0] = True
-            optimize_params_list.extend(each_params)
+        optimize_params_list = [self.code,
+                                ema_performance, ema_short_period, ema_long_period,
+                                bb_performance, bb_n, bb_k,
+                                ichimoku_performance,
+                                rsi_performance, rsi_period, rsi_buy_thread, rsi_sell_thread,
+                                macd_performance, macd_fast_period, macd_slow_period, macd_signal_period,
+                                willr_performance, willr_period, willr_buy_thread, willr_sell_thread,
+                                stochf_performance, stochf_fastk_period, stochf_fastd_period,
+                                stochf_buy_thread, stochf_sell_thread,
+                                stoch_performance, stoch_fastk_period, stoch_slowk_period, stoch_slowd_period,
+                                stoch_buy_thread, stoch_sell_thread]
 
         df_params = pd.DataFrame(data=optimize_params_list).T
         df_params.index = [backtesting_time]

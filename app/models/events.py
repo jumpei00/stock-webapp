@@ -1,4 +1,3 @@
-from sqlalchemy import Boolean
 from sqlalchemy import Column
 from sqlalchemy import DateTime
 from sqlalchemy import desc
@@ -121,6 +120,8 @@ class SignalEventController(object):
             signal_event = self.signals[i]
             if i == 0 and signal_event.side == constants.SELL:
                 continue
+            if signal_event.price is None:
+                continue
             if signal_event.side == constants.BUY:
                 total -= signal_event.price
                 is_holding = True
@@ -147,8 +148,9 @@ class SignalEventController(object):
 
 
 class SignalEventMixnin(object):
-    signal_date = Column(DateTime, primary_key=True, nullable=False)
-    traded_date = Column(DateTime, nullable=False)
+    id = Column(Integer, primary_key=True)
+    signal_date = Column(DateTime)
+    traded_date = Column(DateTime)
     side = Column(String)
     price = Column(Float)
 
@@ -255,7 +257,7 @@ class BackTestParamsController(object):
 
     def create_params(self, df_params):
         LatestBackTestResults.delete(code=self.code)
-        LatestBackTestResults.create(code=self.code, df_params=df_params)
+        LatestBackTestResults.create_params(code=self.code, df_params=df_params)
 
     @property
     def get_params(self):
@@ -293,38 +295,30 @@ class LatestBackTestResults(Base):
                           back_populates='_stochf', cascade='all, delete')
     stoch = relationship('SignalEventForOptimizedStoch',
                          back_populates='_stoch', cascade='all, delete')
-    ema_enable = Column(Boolean)
     ema_performance = Column(Float)
     ema_short_period = Column(Integer)
     ema_long_period = Column(Integer)
-    bb_enable = Column(Boolean)
     bb_performance = Column(Float)
     bb_n = Column(Integer)
     bb_k = Column(Float)
-    ichimoku_enable = Column(Boolean)
     ichimoku_performance = Column(Float)
-    rsi_enable = Column(Boolean)
     rsi_performance = Column(Float)
     rsi_period = Column(Integer)
     rsi_buy_thread = Column(Float)
     rsi_sell_thread = Column(Float)
-    macd_enable = Column(Boolean)
     macd_performance = Column(Float)
     macd_fast_period = Column(Integer)
     macd_slow_period = Column(Integer)
     macd_signal_period = Column(Integer)
-    willr_enable = Column(Boolean)
     willr_performance = Column(Float)
     willr_period = Column(Integer)
     willr_buy_thread = Column(Float)
     willr_sell_thread = Column(Float)
-    stochf_enable = Column(Boolean)
     stochf_performance = Column(Float)
     stochf_fastk_period = Column(Integer)
     stochf_fastd_period = Column(Integer)
     stochf_buy_thread = Column(Float)
     stochf_sell_thread = Column(Float)
-    stoch_enable = Column(Boolean)
     stoch_performance = Column(Float)
     stoch_fastk_period = Column(Integer)
     stoch_slowk_period = Column(Integer)
@@ -363,38 +357,30 @@ class LatestBackTestResults(Base):
         dict_values = omitempty({
             'date': self.date,
             'code': self.code,
-            'ema_enable': self.ema_enable,
             'ema_performance': self.ema_performance,
             'ema_short_period': self.ema_short_period,
             'ema_long_period': self.ema_long_period,
-            'bb_enable': self.bb_enable,
             'bb_performance': self.bb_performance,
             'bb_n': self.bb_n,
             'bb_k': self.bb_k,
-            'ichimoku_enable': self.ichimoku_enable,
             'ichimoku_performance': self.ichimoku_performance,
-            'rsi_enable': self.rsi_enable,
             'rsi_performance': self.rsi_performance,
             'rsi_period': self.rsi_period,
             'rsi_buy_thread': self.rsi_buy_thread,
             'rsi_sell_thread': self.rsi_sell_thread,
-            'macd_enable': self.macd_enable,
             'macd_performance': self.macd_performance,
             'macd_fast_period': self.macd_fast_period,
             'macd_slow_period': self.macd_slow_period,
             'macd_signal_period': self.macd_signal_period,
-            'willr_enable': self.willr_enable,
             'willr_performance': self.willr_performance,
             'willr_period': self.willr_period,
             'willr_buy_thread': self.willr_buy_thread,
             'willr_sell_thread': self.willr_sell_thread,
-            'stochf_enable': self.stochf_enable,
             'stochf_performance': self.stochf_performance,
             'stochf_fastk_period': self.stochf_fastk_period,
             'stochf_fastd_period': self.stochf_fastd_period,
             'stochf_buy_thread': self.stochf_buy_thread,
             'stochf_sell_thread': self.stochf_sell_thread,
-            'stoch_enable': self.stoch_enable,
             'stoch_performance': self.stoch_performance,
             'stoch_fastk_period': self.stoch_fastk_period,
             'stoch_slowk_period': self.stoch_slowk_period,

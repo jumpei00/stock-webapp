@@ -59,3 +59,4 @@ class GetStockPrice(object):
     def save_in_database(self):
         stock_data = self.get_stock_data
         StockData.create(stock_df=stock_data)
+        logger.info('#####action GetStockPrice -> save_in_database: stockdata save done#####')

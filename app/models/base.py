@@ -31,5 +31,6 @@ def session_scope():
 
 
 def init_db():
+    import app.models.candle  # noqa: F401
     import app.models.events  # noqa: F401
     Base.metadata.create_all(bind=engine)

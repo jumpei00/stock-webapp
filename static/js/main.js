@@ -1,4 +1,5 @@
 var stock = new StockGet()
+var backtest = new BackTest()
 var sma = new Sma()
 var ema = new Ema()
 var bbands = new BBands()
@@ -73,6 +74,18 @@ function send() {
         params["stochPeriod3"] = config.stoch.periods[2];
     }
 
+    if (config.events.enable == true) {
+        params["events"] = true;
+        params["EmaEventsEnable"] = config.events.ema.enable;
+        params["BBandsEventsEnable"] = config.events.bbands.enable;
+        params["IchimokuEventsEnable"] = config.events.ichimoku.enable;
+        params["RsiEventsEnable"] = config.events.rsi.enable;
+        params["MacdEventsEnable"] = config.events.macd.enable;
+        params["WillrEventsEnable"] = config.events.willr.enable;
+        params["StochfEventsEnable"] = config.events.stochf.enable;
+        params["StochEventsEnable"] = config.events.stoch.enable;
+    }
+
     // ajax(methods is GET)
     $.get("/candle", params).done(function (data) {
         initConfigValues();
@@ -124,6 +137,33 @@ function send() {
             stoch.addColumns(data, dataTable)
         }
 
+        if (data['events'] != undefined) {
+            if (data['events']['ema_event'] != undefined) {
+                ema.addEventColums(data, dataTable)
+            }
+            if (data['events']['bb_event'] != undefined) {
+                bbands.addEventColums(data, dataTable)
+            }
+            if (data['events']['ichimoku_event'] != undefined) {
+                ichimoku.addEventColums(data, dataTable)
+            }
+            if (data['events']['rsi_event'] != undefined) {
+                rsi.addEventColums(data, dataTable)
+            }
+            if (data['events']['macd_event'] != undefined) {
+                macd.addEventColums(data, dataTable)
+            }
+            if (data['events']['willr_event'] != undefined) {
+                willr.addEventColums(data, dataTable)
+            }
+            if (data['events']['stochf_event'] != undefined) {
+                stochf.addEventColums(data, dataTable)
+            }
+            if (data['events']['stoch_event'] != undefined) {
+                stoch.addEventColums(data, dataTable)
+            }
+        }
+
         // add datas of candles and indicators
         for (var i = 0; i < candles.length; i++) {
             var candle = candles[i];
@@ -166,6 +206,33 @@ function send() {
 
             if (data["stoch"] != undefined) {
                 stoch.addData(datas, i)
+            }
+
+            if (data["events"] != undefined) {
+                if (data['events']['ema_event'] != undefined) {
+                    ema.addEventData(datas, candle)
+                }
+                if (data['events']['bb_event'] != undefined) {
+                    bbands.addEventData(datas, candle)
+                }
+                if (data['events']['ichimoku_event'] != undefined) {
+                    ichimoku.addEventData(datas, candle)
+                }
+                if (data['events']['rsi_event'] != undefined) {
+                    rsi.addEventData(datas, candle)
+                }
+                if (data['events']['macd_event'] != undefined) {
+                    macd.addEventData(datas, candle)
+                }
+                if (data['events']['willr_event'] != undefined) {
+                    willr.addEventData(datas, candle)
+                }
+                if (data['events']['stochf_event'] != undefined) {
+                    stochf.addEventData(datas, candle)
+                }
+                if (data['events']['stoch_event'] != undefined) {
+                    stoch.addEventData(datas, candle)
+                }
             }
 
             googleChartData.push(datas);
@@ -252,6 +319,33 @@ function drawChart(dataTable) {
         stoch.drawChart(charts)
     }
 
+    if (config.events.enable == true) {
+        if (config.events.ema.enable == true && config.events.ema.indexes.length > 0) {
+            ema.drawEvents(options, view)
+        }
+        if (config.events.bbands.enable == true && config.events.bbands.indexes.length > 0) {
+            bbands.drawEvents(options, view)
+        }
+        if (config.events.ichimoku.enable == true && config.events.ichimoku.indexes.length > 0) {
+            ichimoku.drawEvents(options, view)
+        }
+        if (config.events.rsi.enable == true && config.events.rsi.indexes.length > 0) {
+            rsi.drawEvents(options, view)
+        }
+        if (config.events.macd.enable == true && config.events.macd.indexes.length > 0) {
+            macd.drawEvents(options, view)
+        }
+        if (config.events.willr.enable == true && config.events.willr.indexes.length > 0) {
+            willr.drawEvents(options, view)
+        }
+        if (config.events.stochf.enable == true && config.events.stochf.indexes.length > 0) {
+            stochf.drawEvents(options, view)
+        }
+        if (config.events.stoch.enable == true && config.events.stoch.indexes.length > 0) {
+            stoch.drawEvents(options, view)
+        }
+    }
+
     var controlWrapper = new google.visualization.ControlWrapper({
         'controlType': 'ChartRangeFilter',
         'containerId': 'filter_div',
@@ -270,10 +364,159 @@ function drawChart(dataTable) {
     dashboard.draw(dataTable);
 }
 
+// backtest
+function trade() {
+    var params = {
+        "status": config.candlestick.status,
+        "stockcode": config.candlestick.stockcode,
+        "trade": trade_config.trade.status,
+        "backtest": trade_config.trade.backtest
+    }
+
+    if (params["backtest"] == true) {
+        params["emaBacktest1"] = $('#inputEMAShortPeriod1').val();
+        params["emaBacktest2"] = $('#inputEMAShortPeriod2').val();
+        params["emaBacktest3"] = $('#inputEMALongPeriod1').val();
+        params["emaBacktest4"] = $('#inputEMALongPeriod2').val();
+
+        params["bbandsBacktest1"] = $('#inputBBandsNPeriod1').val();
+        params["bbandsBacktest2"] = $('#inputBBandsNPeriod2').val();
+        params["bbandsBacktest3"] = $('#inputBBandsKPeriod1').val();
+        params["bbandsBacktest4"] = $('#inputBBandsKPeriod2').val();
+
+        params["rsiBacktest1"] = $('#inputRsiPeriod1').val();
+        params["rsiBacktest2"] = $('#inputRsiPeriod2').val();
+        params["rsiBacktest3"] = $('#inputRsiBuyThread1').val();
+        params["rsiBacktest4"] = $('#inputRsiBuyThread2').val();
+        params["rsiBacktest5"] = $('#inputRsiSellThread1').val();
+        params["rsiBacktest6"] = $('#inputRsiSellThread2').val();
+
+        params["macdBacktest1"] = $('#inputMacdFastPeriod1').val();
+        params["macdBacktest2"] = $('#inputMacdFastPeriod2').val();
+        params["macdBacktest3"] = $('#inputMacdSlowPeriod1').val();
+        params["macdBacktest4"] = $('#inputMacdSlowPeriod2').val();
+        params["macdBacktest5"] = $('#inputMacdSignalPeriod1').val();
+        params["macdBacktest6"] = $('#inputMacdSignalPeriod2').val();
+        
+        params["willrBacktest1"] = $('#inputWillrPeriod1').val();
+        params["willrBacktest2"] = $('#inputWillrPeriod2').val();
+        params["willrBacktest3"] = $('#inputWillrBuyThread1').val();
+        params["willrBacktest4"] = $('#inputWillrBuyThread2').val();
+        params["willrBacktest5"] = $('#inputWillrSellThread1').val();
+        params["willrBacktest6"] = $('#inputWillrSellThread2').val();
+
+        params["stochfBacktest1"] = $('#inputStochfFastkPeriod1').val();
+        params["stochfBacktest2"] = $('#inputStochfFastkPeriod2').val();
+        params["stochfBacktest3"] = $('#inputStochfFastdPeriod1').val();
+        params["stochfBacktest4"] = $('#inputStochfFastdPeriod2').val();
+        params["stochfBacktest5"] = $('#inputStochfBuyThread1').val();
+        params["stochfBacktest6"] = $('#inputStochfBuyThread2').val();
+        params["stochfBacktest7"] = $('#inputStochfSellThread1').val();
+        params["stochfBacktest8"] = $('#inputStochfSellThread2').val();
+        
+        params["stochBacktest1"] = $('#inputStochFastkPeriod1').val();
+        params["stochBacktest2"] = $('#inputStochFastkPeriod2').val();
+        params["stochBacktest3"] = $('#inputStochSlowkPeriod1').val();
+        params["stochBacktest4"] = $('#inputStochSlowkPeriod2').val();
+        params["stochBacktest5"] = $('#inputStochSlowdPeriod1').val();
+        params["stochBacktest6"] = $('#inputStochSlowdPeriod2').val();
+        params["stochBacktest7"] = $('#inputStochBuyThread1').val();
+        params["stochBacktest8"] = $('#inputStochBuyThread2').val();
+        params["stochBacktest9"] = $('#inputStochSellThread1').val();
+        params["stochBacktest10"] = $('#inputStochSellThread2').val();
+    }
+
+    $.get("/trade", params).done(function (data) {
+        initTradeConfigValues()
+
+        if (data['params'] != undefined) {
+            trade_results.backtest.enable = true;
+            trade_results.backtest.code = data['params']['code'];
+            trade_results.backtest.date = data['params']['date'];
+
+            trade_results.backtest.ema.performance = data['params']['ema_performance'];
+            trade_results.backtest.ema.short_period = data['params']['ema_short_period'];
+            trade_results.backtest.ema.long_period = data['params']['ema_long_period'];
+
+            trade_results.backtest.bbands.performance = data['params']['bb_performance'];
+            trade_results.backtest.bbands.n = data['params']['bb_n'];
+            trade_results.backtest.bbands.k = data['params']['bb_k'];
+
+            trade_results.backtest.ichimoku.performance = data['params']['ichimoku_performance'];
+
+            trade_results.backtest.rsi.performance = data['params']['rsi_performance'];
+            trade_results.backtest.rsi.period = data['params']['rsi_period'];
+            trade_results.backtest.rsi.buy_thread = data['params']['rsi_buy_thread'];
+            trade_results.backtest.rsi.sell_thread = data['params']['rsi_sell_thread'];
+
+            trade_results.backtest.macd.performance = data['params']['macd_performance'];
+            trade_results.backtest.macd.fast_period = data['params']['macd_fast_period'];
+            trade_results.backtest.macd.slow_period = data['params']['macd_slow_period'];
+            trade_results.backtest.macd.signal_period = data['params']['macd_signal_period'];
+
+            trade_results.backtest.willr.performance = data['params']['willr_performance'];
+            trade_results.backtest.willr.period = data['params']['willr_period'];
+            trade_results.backtest.willr.buy_thread = data['params']['willr_buy_thread'];
+            trade_results.backtest.willr.sell_thread = data['params']['willr_sell_thread'];
+
+            trade_results.backtest.stochf.performance = data['params']['stochf_performance'];
+            trade_results.backtest.stochf.fastk_period = data['params']['stochf_fastk_period'];
+            trade_results.backtest.stochf.fastd_period = data['params']['stochf_fastd_period'];
+            trade_results.backtest.stochf.buy_thread = data['params']['stochf_buy_thread'];
+            trade_results.backtest.stochf.sell_thread = data['params']['stochf_sell_thread'];
+
+            trade_results.backtest.stoch.performance = data['params']['stoch_performance'];
+            trade_results.backtest.stoch.fastk_period = data['params']['stoch_fastk_period'];
+            trade_results.backtest.stoch.slowk_period = data['params']['stoch_slowk_period'];
+            trade_results.backtest.stoch.slowd_period = data['params']['stoch_slowd_period'];
+            trade_results.backtest.stoch.buy_thread = data['params']['stoch_buy_thread'];
+            trade_results.backtest.stoch.sell_thread = data['params']['stoch_sell_thread'];
+        }
+
+        if (data['trade'] != undefined) {
+            trade_results.today.ema_trade = data['trade']['ema_trade'];
+            trade_results.today.bb_trade = data['trade']['bb_trade'];
+            trade_results.today.ichimoku_trade = data['trade']['ichimoku'];
+            trade_results.today.rsi_trade = data['trade']['rsi_trade'];
+            trade_results.today.macd_trade = data['trade']['macd_trade'];
+            trade_results.today.willr_trade = data['trade']['willr_trade'];
+            trade_results.today.stochf_trade = data['trade']['stochf_trade'];
+            trade_results.today.stoch_trade = data['trade']['stoch_trade'];
+        }
+
+        drawTrade()
+    })
+}
+
+function drawTrade() {
+    backtest.register();
+    ema.drawParams();
+    bbands.drawParams();
+    ichimoku.drawParams();
+    rsi.drawParams();
+    macd.drawParams();
+    willr.drawParams();
+    stochf.drawParams();
+    stoch.drawParams();
+
+    ema.drawSignal();
+    bbands.drawSignal();
+    ichimoku.drawSignal();
+    rsi.drawSignal();
+    macd.drawSignal();
+    willr.drawSignal();
+    stochf.drawSignal();
+    stoch.drawSignal();
+    
+    tradeResultsReset()
+}
+
 // monitoring checkboxes and textboxes 
 window.onload = function () {
     send();
-    stock.input();
+    trade();
+    stock.get();
+    backtest.go();
     sma.input();
     ema.input();
     bbands.input();

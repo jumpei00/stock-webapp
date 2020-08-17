@@ -1,4 +1,4 @@
-import omitempty
+import logging
 
 from app.models.candle import StockData
 from app.models.events import BackTestParamsController
@@ -8,6 +8,8 @@ from app.technical import oscillator
 from utils.utils import empty_to_none
 import settings
 import constants
+
+logger = logging.getLogger(__name__)
 
 
 class DataFrameCandle(object):
@@ -191,7 +193,7 @@ class DataFrameCandle(object):
 
     def add_each_event(self, ema_enable, bb_enable, ichimoku_enable, rsi_enble,
                        macd_enable, willr_enable, stochf_enable, stoch_enable):
-        signal_events = constants.SIGNAL_EVENTS
+        signal_events = constants.SIGNAL_EVENTS.copy()
         enables = [ema_enable, bb_enable, ichimoku_enable, rsi_enble,
                    macd_enable, willr_enable, stochf_enable, stoch_enable]
         base_list = constants.BASE_LIST
@@ -202,6 +204,6 @@ class DataFrameCandle(object):
                     base=base, code=self.code)
                 signal_events[signal_events_key] = signal_event.value
 
-        self.each_event = omitempty(signal_events)
+        self.each_event = signal_events
 
         return True

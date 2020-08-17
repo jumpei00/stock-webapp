@@ -5,3 +5,4 @@ app/controllers/__pycache__/
 app/models/__pycache__/
 app/technical/__pycache__/
 utils/__pycache__/
+/stock_data.sql

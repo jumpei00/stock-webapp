@@ -1,18 +1,50 @@
 class StockGet {
-    input() {
+    get() {
         $('#inputGet').on('click', function () {
             var stockcode = $('#inputCode').val();
             var duration = $('#inputDuration').val();
             if (stockcode == config.candlestick.stockcode) {
                 config.candlestick.status = false
+                config.candlestick.duration = duration
+                send()
             }
             else {
                 config.candlestick.status = true
                 config.candlestick.stockcode = stockcode
+                config.candlestick.duration = duration
+                trade_config.trade.status = true
+                send()
+                trade()
             }
-            config.candlestick.duration = duration
-            send()
         })
+    }
+}
+
+class BackTest {
+    go() {
+        $('#backtestGo').on('click', function () {
+            var stockcode = $('#inputCode').val();
+            var duration = $('#inputDuration').val();
+            if (stockcode == config.candlestick.stockcode) {
+                trade_config.trade.status = true
+                trade_config.trade.backtest = true
+                trade()
+            }
+            else {
+                config.candlestick.status = true
+                config.candlestick.stockcode = stockcode
+                config.candlestick.duration = duration
+                trade_config.trade.status = true
+                trade_config.trade.backtest = true
+                send()
+                trade()
+            }
+        })
+    }
+
+    register() {
+        $('#BackTestStockCode').text(trade_results.backtest.code);
+        $('#BackTestDate').text(trade_results.backtest.date);
     }
 }
 
@@ -91,6 +123,18 @@ class Ema {
             config.ema.periods[2] = this.value;
             send();
         });
+        $(document).on('change', '#tradeEma', function () {
+            if (this.checked === true) {
+                config.events.enable = true;
+                config.events.ema.enable = true;
+            }
+            else {
+                config.events.ema.enable = false;
+                eventsEnable()
+                $('#EmaNowProfit').text('')
+            }
+            send();
+        });
     }
 
     addColumns(data, dataTable) {
@@ -104,6 +148,29 @@ class Ema {
         }
     }
 
+    addEventColums(data, dataTable) {
+        var profit;
+        config.dataTable.index += 1;
+        config.events.ema.indexes[0] = config.dataTable.index;
+        config.dataTable.index += 1;
+        config.events.ema.indexes[1] = config.dataTable.index;
+        config.events.index += 1;
+        config.events.ema.index = config.events.index
+
+        config.events.ema.values = data['events']['ema_event']['signals'];
+        if (config.events.ema.values != undefined) {
+            config.events.ema.first = config.events.ema.values.shift();
+        }
+
+        dataTable.addColumn('number', 'Marker');
+        dataTable.addColumn({ type: 'string', role: 'annotation' });
+
+        if (data['events']['ema_event']['profit'] != undefined) {
+            profit = data['events']['ema_event']['profit']
+            $('#EmaNowProfit').text(profit)
+        }
+    }
+
     addData(datas, i) {
         for (var j = 0; j < config.ema.values.length; j++) {
             if (config.ema.values[j][i] == 0) {
@@ -114,11 +181,66 @@ class Ema {
         }
     }
 
+    addEventData(datas, candle) {
+        var event = config.events.ema.first
+        if (event == undefined) {
+            datas.push(null);
+            datas.push(null);
+        }
+        else if (event.signal_date == candle.date) {
+            datas.push(candle.high);
+            datas.push('(ema)' + event.side);
+            config.events.ema.first = config.events.ema.values.shift();
+        }
+        else {
+            datas.push(null);
+            datas.push(null);
+        }
+    }
+
     drawChart(options, view) {
         for (var i = 0; i < config.ema.indexes.length; i++) {
             options.series[config.ema.indexes[i]] = { type: 'line' };
             view.columns.push(config.candlestick.numViews + config.ema.indexes[i]);
         }
+    }
+
+    drawEvents(options, view) {
+        options.series[config.events.ema.indexes[0] - config.events.ema.index + 1] = {
+            'type': 'line',
+            tooltip: 'none',
+            enableInteractivity: false,
+            lineWidth: 0
+        };
+        view.columns.push(config.candlestick.numViews + config.events.ema.indexes[0]);
+        view.columns.push(config.candlestick.numViews + config.events.ema.indexes[1]);
+    }
+
+    drawParams() {
+        if (trade_results.backtest.enable == true) {
+            if ($('#EmaParams').children('div').length == 2) {
+                $('#EmaParams').prepend(
+                    '<div id="EmaResults">[Results] Performace: <span id="EmaPerformance"></span><br>' +
+                    'Short: <span id="EmaShort"></span>' +
+                    'Long: <span id="EmaLong"></span>' +
+                    '</div>'
+                )
+                $('#EmaEvents').append(
+                    '<input id="tradeEma" type="checkbox">'
+                )
+            }
+            $('#EmaPerformance').text(trade_results.backtest.ema.performance)
+            $('#EmaShort').text(trade_results.backtest.ema.short_period)
+            $('#EmaLong').text(trade_results.backtest.ema.long_period)
+        }
+        else if (trade_results.backtest.enable == false) {
+            $('#EmaResults').remove()
+            $('#tradeEma').remove()
+        }
+    }
+
+    drawSignal() {
+        $('#EmaSignal').text(trade_results.today.ema_trade)
     }
 }
 
@@ -138,6 +260,18 @@ class BBands {
         });
         $("#inputBBandsK").change(function () {
             config.bbands.k = this.value;
+            send();
+        });
+        $(document).on('change', '#tradeBBands', function () {
+            if (this.checked === true) {
+                config.events.enable = true;
+                config.events.bbands.enable = true;
+            }
+            else {
+                config.events.bbands.enable = false;
+                eventsEnable()
+                $('#BBandsNowProfit').text('')
+            }
             send();
         });
     }
@@ -162,6 +296,29 @@ class BBands {
         config.bbands.down = down;
     }
 
+    addEventColums(data, dataTable) {
+        var profit;
+        config.dataTable.index += 1;
+        config.events.bbands.indexes[0] = config.dataTable.index;
+        config.dataTable.index += 1;
+        config.events.bbands.indexes[1] = config.dataTable.index;
+        config.events.index += 1;
+        config.events.bbands.index = config.events.index
+
+        config.events.bbands.values = data['events']['bb_event']['signals'];
+        if (config.events.bbands.values != undefined) {
+            config.events.bbands.first = config.events.bbands.values.shift();
+        }
+
+        dataTable.addColumn('number', 'Marker');
+        dataTable.addColumn({ type: 'string', role: 'annotation' });
+
+        if (data['events']['bb_event']['profit'] != undefined) {
+            profit = data['events']['bb_event']['profit']
+            $('#BBandsNowProfit').text(profit)
+        }
+    }
+
     addData(datas, i) {
         if (config.bbands.up[i] == 0) {
             datas.push(null);
@@ -180,6 +337,23 @@ class BBands {
         }
     }
 
+    addEventData(datas, candle) {
+        var event = config.events.bbands.first
+        if (event == undefined) {
+            datas.push(null);
+            datas.push(null);
+        }
+        else if (event.signal_date == candle.date) {
+            datas.push(candle.high);
+            datas.push('(bb)' + event.side);
+            config.events.bbands.first = config.events.bbands.values.shift();
+        }
+        else {
+            datas.push(null);
+            datas.push(null);
+        }
+    }
+
     drawChart(options, view) {
         for (var i = 0; i < config.bbands.indexes.length; i++) {
             options.series[config.bbands.indexes[i]] = {
@@ -190,6 +364,45 @@ class BBands {
             view.columns.push(config.candlestick.numViews + config.bbands.indexes[i])
         }
     }
+
+    drawEvents(options, view) {
+        options.series[config.events.bbands.indexes[0] - config.events.bbands.index + 1] = {
+            'type': 'line',
+            tooltip: 'none',
+            enableInteractivity: false,
+            lineWidth: 0
+        };
+        view.columns.push(config.candlestick.numViews + config.events.bbands.indexes[0]);
+        view.columns.push(config.candlestick.numViews + config.events.bbands.indexes[1]);
+    }
+
+    drawParams() {
+        if (trade_results.backtest.enable == true) {
+            if ($('#BBandsParams').children('div').length == 2) {
+                $('#BBandsParams').prepend(
+                    '<div id="BBandsResults">[Results] Performace: <span id="BBandsPerformance"></span><br>' +
+                    'N: <span id="BBandsN"></span>' +
+                    'K: <span id="BBandsK"></span>' +
+                    '</div>'
+                )
+                $('#BBandsEvents').append(
+                    '<input id="tradeBBands" type="checkbox">'
+                )
+            }
+            $('#BBandsPerformance').text(trade_results.backtest.bbands.performance)
+            $('#BBandsN').text(trade_results.backtest.bbands.n)
+            $('#BBandsK').text(trade_results.backtest.bbands.k)
+        }
+
+        else if (trade_results.backtest.enable == false) {
+            $('#BBandsResults').remove()
+            $('#tradeBBands').remove()
+        }
+    }
+
+    drawSignal() {
+        $('#BBandsSignal').text(trade_results.today.bb_trade)
+    }
 }
 
 class Ichimoku {
@@ -199,6 +412,18 @@ class Ichimoku {
                 config.ichimoku.enable = true;
             } else {
                 config.ichimoku.enable = false;
+            }
+            send();
+        });
+        $(document).on('change', '#tradeIchimoku', function () {
+            if (this.checked === true) {
+                config.events.enable = true;
+                config.events.ichimoku.enable = true;
+            }
+            else {
+                config.events.ichimoku.enable = false;
+                eventsEnable()
+                $('#IchimokuNowProfit').text('')
             }
             send();
         });
@@ -235,6 +460,29 @@ class Ichimoku {
         dataTable.addColumn('number', 'Chikou');
     }
 
+    addEventColums(data, dataTable) {
+        var profit;
+        config.dataTable.index += 1;
+        config.events.ichimoku.indexes[0] = config.dataTable.index;
+        config.dataTable.index += 1;
+        config.events.ichimoku.indexes[1] = config.dataTable.index;
+        config.events.index += 1;
+        config.events.ichimoku.index = config.events.index
+
+        config.events.ichimoku.values = data['events']['ichimoku_event']['signals'];
+        if (config.events.ichimoku.values != undefined) {
+            config.events.ichimoku.first = config.events.ichimoku.values.shift();
+        }
+
+        dataTable.addColumn('number', 'Marker');
+        dataTable.addColumn({ type: 'string', role: 'annotation' });
+
+        if (data['events']['ichimoku_event']['profit'] != undefined) {
+            profit = data['events']['ichimoku_event']['profit']
+            $('#IchimokuNowProfit').text(profit)
+        }
+    }
+
     addData(datas, i) {
         if (config.ichimoku.tenkan[i] == 0) {
             datas.push(null);
@@ -263,6 +511,23 @@ class Ichimoku {
         }
     }
 
+    addEventData(datas, candle) {
+        var event = config.events.ichimoku.first
+        if (event == undefined) {
+            datas.push(null);
+            datas.push(null);
+        }
+        else if (event.signal_date == candle.date) {
+            datas.push(candle.high);
+            datas.push('(ichi)' + event.side);
+            config.events.ichimoku.first = config.events.ichimoku.values.shift();
+        }
+        else {
+            datas.push(null);
+            datas.push(null);
+        }
+    }
+
     drawChart(options, view) {
         for (var i = 0; i < config.ichimoku.indexes.length; i++) {
             options.series[config.ichimoku.indexes[i]] = {
@@ -271,6 +536,42 @@ class Ichimoku {
             };
             view.columns.push(config.candlestick.numViews + config.ichimoku.indexes[i]);
         }
+    }
+
+    drawEvents(options, view) {
+        options.series[config.events.ichimoku.indexes[0] - config.events.ichimoku.index + 1] = {
+            'type': 'line',
+            tooltip: 'none',
+            enableInteractivity: false,
+            lineWidth: 0
+        };
+        view.columns.push(config.candlestick.numViews + config.events.ichimoku.indexes[0]);
+        view.columns.push(config.candlestick.numViews + config.events.ichimoku.indexes[1]);
+    }
+
+    drawParams() {
+        if (trade_results.backtest.enable == true) {
+            if ($('#IchimokuParams').children('div').length == 0) {
+                $('#IchimokuParams').append(
+                    '<div id="IchimokuResults">' +
+                    '[Results] Performace: <span id="ichimokuPerformance"></span>' +
+                    '</div>'
+                )
+                $('#IchimokuEvents').append(
+                    '<input id="tradeIchimoku" type="checkbox">'
+                )
+            }
+            $('#ichimokuPerformance').text(trade_results.backtest.ichimoku.performance)
+        }
+
+        else if (trade_results.backtest.enable == false) {
+            $('#IchimokuResults').remove()
+            $('#tradeIchimoku').remove()
+        }
+    }
+
+    drawSignal() {
+        $('#IchimokuSignal').text(trade_results.today.ichimoku_trade)
     }
 }
 
@@ -326,6 +627,18 @@ class Rsi {
             config.rsi.period = this.value;
             send();
         });
+        $(document).on('change', '#tradeRsi', function () {
+            if (this.checked === true) {
+                config.events.enable = true;
+                config.events.rsi.enable = true;
+            }
+            else {
+                config.events.rsi.enable = false;
+                eventsEnable()
+                $('#RsiNowProfit').text('')
+            }
+            send();
+        });
     }
 
     addColumns(data, dataTable) {
@@ -342,6 +655,29 @@ class Rsi {
         dataTable.addColumn('number', 'RSI Thread');
     }
 
+    addEventColums(data, dataTable) {
+        var profit;
+        config.dataTable.index += 1;
+        config.events.rsi.indexes[0] = config.dataTable.index;
+        config.dataTable.index += 1;
+        config.events.rsi.indexes[1] = config.dataTable.index;
+        config.events.index += 1;
+        config.events.rsi.index = config.events.index
+
+        config.events.rsi.values = data['events']['rsi_event']['signals'];
+        if (config.events.rsi.values != undefined) {
+            config.events.rsi.first = config.events.rsi.values.shift();
+        }
+
+        dataTable.addColumn('number', 'Marker');
+        dataTable.addColumn({ type: 'string', role: 'annotation' });
+
+        if (data['events']['rsi_event']['profit'] != undefined) {
+            profit = data['events']['rsi_event']['profit']
+            $('#RsiNowProfit').text(profit)
+        }
+    }
+
     addData(datas, i) {
         datas.push(config.rsi.up);
         if (config.rsi.values[i] == 0) {
@@ -350,6 +686,23 @@ class Rsi {
             datas.push(config.rsi.values[i]);
         }
         datas.push(config.rsi.down);
+    }
+
+    addEventData(datas, candle) {
+        var event = config.events.rsi.first
+        if (event == undefined) {
+            datas.push(null);
+            datas.push(null);
+        }
+        else if (event.signal_date == candle.date) {
+            datas.push(candle.high);
+            datas.push('(rsi)' + event.side);
+            config.events.rsi.first = config.events.rsi.values.shift();
+        }
+        else {
+            datas.push(null);
+            datas.push(null);
+        }
     }
 
     drawChart(charts) {
@@ -381,6 +734,48 @@ class Rsi {
         });
         charts.push(rsiChart)
     }
+
+    drawEvents(options, view) {
+        options.series[config.events.rsi.indexes[0] - config.events.rsi.index + 1] = {
+            'type': 'line',
+            tooltip: 'none',
+            enableInteractivity: false,
+            lineWidth: 0
+        };
+        view.columns.push(config.candlestick.numViews + config.events.rsi.indexes[0]);
+        view.columns.push(config.candlestick.numViews + config.events.rsi.indexes[1]);
+    }
+
+    drawParams() {
+        if (trade_results.backtest.enable == true) {
+            if ($('#RsiParams').children('div').length == 3) {
+                $('#RsiParams').prepend(
+                    '<div id="RsiResults">' +
+                    '[Results] Performace: <span id="RsiPerfomance"></span><br>' +
+                    'Period: <span id="RsiPeriod"></span>' +
+                    'Buy Thread: <span id="RsiBuyThread"></span>' +
+                    'Sell Thread: <span id="RsiSellThread"></span>' +
+                    '</div>'
+                )
+                $('#RsiEvents').append(
+                    '<input id="tradeRsi" type="checkbox">'
+                )
+            }
+            $('#RsiPerfomance').text(trade_results.backtest.rsi.performance)
+            $('#RsiPeriod').text(trade_results.backtest.rsi.period)
+            $('#RsiBuyThread').text(trade_results.backtest.rsi.buy_thread)
+            $('#RsiSellThread').text(trade_results.backtest.rsi.sell_thread)
+        }
+
+        else if (trade_results.backtest.enable == false) {
+            $('#RsiResults').remove()
+            $('#tradeRsi').remove()
+        }
+    }
+
+    drawSignal() {
+        $('#RsiSignal').text(trade_results.today.rsi_trade)
+    }
 }
 
 class Macd {
@@ -404,6 +799,18 @@ class Macd {
         });
         $("#inputMacdPeriod3").change(function () {
             config.macd.periods[2] = this.value;
+            send();
+        });
+        $(document).on('change', '#tradeMacd', function () {
+            if (this.checked === true) {
+                config.events.enable = true;
+                config.events.macd.enable = true;
+            }
+            else {
+                config.events.macd.enable = false;
+                eventsEnable()
+                $('#MacdNowProfit').text('')
+            }
             send();
         });
     }
@@ -435,6 +842,29 @@ class Macd {
         config.macd.periods[2] = signal_period;
     }
 
+    addEventColums(data, dataTable) {
+        var profit;
+        config.dataTable.index += 1;
+        config.events.macd.indexes[0] = config.dataTable.index;
+        config.dataTable.index += 1;
+        config.events.macd.indexes[1] = config.dataTable.index;
+        config.events.index += 1;
+        config.events.macd.index = config.events.index
+
+        config.events.macd.values = data['events']['macd_event']['signals'];
+        if (config.events.macd.values != undefined) {
+            config.events.macd.first = config.events.macd.values.shift();
+        }
+
+        dataTable.addColumn('number', 'Marker');
+        dataTable.addColumn({ type: 'string', role: 'annotation' });
+
+        if (data['events']['macd_event']['profit'] != undefined) {
+            profit = data['events']['macd_event']['profit']
+            $('#MacdNowProfit').text(profit)
+        }
+    }
+
     addData(datas, i) {
         for (var j = 0; j < config.macd.values.length; j++) {
             if (config.macd.values[j][i] == 0) {
@@ -442,6 +872,23 @@ class Macd {
             } else {
                 datas.push(config.macd.values[j][i]);
             }
+        }
+    }
+
+    addEventData(datas, candle) {
+        var event = config.events.macd.first
+        if (event == undefined) {
+            datas.push(null);
+            datas.push(null);
+        }
+        else if (event.signal_date == candle.date) {
+            datas.push(candle.high);
+            datas.push('(macd)' + event.side);
+            config.events.macd.first = config.events.macd.values.shift();
+        }
+        else {
+            datas.push(null);
+            datas.push(null);
         }
     }
 
@@ -476,6 +923,48 @@ class Macd {
         });
         charts.push(macdChart)
     }
+
+    drawEvents(options, view) {
+        options.series[config.events.macd.indexes[0] - config.events.macd.index + 1] = {
+            'type': 'line',
+            tooltip: 'none',
+            enableInteractivity: false,
+            lineWidth: 0
+        };
+        view.columns.push(config.candlestick.numViews + config.events.macd.indexes[0]);
+        view.columns.push(config.candlestick.numViews + config.events.macd.indexes[1]);
+    }
+
+    drawParams() {
+        if (trade_results.backtest.enable == true) {
+            if ($('#MacdParams').children('div').length == 3) {
+                $('#MacdParams').prepend(
+                    '<div id="MacdResults">' +
+                    '[Results] Performace: <span id="MacdPerformance"></span><br>' +
+                    'Fast Period<span id="MacdFast"></span>' +
+                    'Slow Period<span id="MacdSlow"></span>' +
+                    'Signal Period<span id="MacdSignal"></span>' +
+                    '</div>'
+                )
+                $('#MacdEvents').append(
+                    '<input id="tradeMacd" type="checkbox">'
+                )
+            }
+            $('#MacdPerformance').text(trade_results.backtest.macd.performance)
+            $('#MacdFast').text(trade_results.backtest.macd.fast_period)
+            $('#MacdSlow').text(trade_results.backtest.macd.slow_period)
+            $('#MacdSignal').text(trade_results.backtest.macd.signal_period)
+        }
+
+        else if (trade_results.backtest.enable == false) {
+            $('#MacdResults').remove()
+            $('#tradeMacd').remove()
+        }
+    }
+
+    drawSignal() {
+        $('#MacdSignal').text(trade_results.today.macd_trade)
+    }
 }
 
 class Willr {
@@ -491,6 +980,18 @@ class Willr {
         });
         $("#inputWillrPeriod").change(function () {
             config.willr.period = this.value;
+            send();
+        });
+        $(document).on('change', '#tradeWillr', function () {
+            if (this.checked === true) {
+                config.events.enable = true;
+                config.events.willr.enable = true;
+            }
+            else {
+                config.events.willr.enable = false;
+                eventsEnable()
+                $('#WillrNowProfit').text('')
+            }
             send();
         });
     }
@@ -509,6 +1010,29 @@ class Willr {
         dataTable.addColumn('number', '%R Thread');
     }
 
+    addEventColums(data, dataTable) {
+        var profit;
+        config.dataTable.index += 1;
+        config.events.willr.indexes[0] = config.dataTable.index;
+        config.dataTable.index += 1;
+        config.events.willr.indexes[1] = config.dataTable.index;
+        config.events.index += 1;
+        config.events.willr.index = config.events.index
+
+        config.events.willr.values = data['events']['willr_event']['signals'];
+        if (config.events.willr.values != undefined) {
+            config.events.willr.first = config.events.willr.values.shift();
+        }
+
+        dataTable.addColumn('number', 'Marker');
+        dataTable.addColumn({ type: 'string', role: 'annotation' });
+
+        if (data['events']['willr_event']['profit'] != undefined) {
+            profit = data['events']['willr_event']['profit']
+            $('#WillrNowProfit').text(profit)
+        }
+    }
+
     addData(datas, i) {
         datas.push(config.willr.up);
         if (config.willr.values[i] == 0) {
@@ -519,8 +1043,26 @@ class Willr {
         datas.push(config.willr.down);
     }
 
+    addEventData(datas, candle) {
+        var event = config.events.willr.first
+        if (event == undefined) {
+            datas.push(null);
+            datas.push(null);
+        }
+        else if (event.signal_date == candle.date) {
+            datas.push(candle.high);
+            datas.push('(wr)' + event.side);
+            config.events.willr.first = config.events.willr.values.shift();
+        }
+        else {
+            datas.push(null);
+            datas.push(null);
+        }
+    }
+
     drawChart(charts) {
         if ($('#willr_div').length == 0) {
+            1
             $('#technical_div').append(
                 "<div id='willr_div' class='bottom_chart'>" +
                 "<span class='technical_title'>Williams%R</span>" +
@@ -548,6 +1090,48 @@ class Willr {
         });
         charts.push(willrChart)
     }
+
+    drawEvents(options, view) {
+        options.series[config.events.willr.indexes[0] - config.events.willr.index + 1] = {
+            'type': 'line',
+            tooltip: 'none',
+            enableInteractivity: false,
+            lineWidth: 0
+        };
+        view.columns.push(config.candlestick.numViews + config.events.willr.indexes[0]);
+        view.columns.push(config.candlestick.numViews + config.events.willr.indexes[1]);
+    }
+
+    drawParams() {
+        if (trade_results.backtest.enable == true) {
+            if ($('#WillrParams').children('div').length == 3) {
+                $('#WillrParams').prepend(
+                    '<div id="WillrResults">' +
+                    '[Results] Performace: <span id="WillrPerformance"></span><br>' +
+                    'Period<span id="WillrPeriod"></span>' +
+                    'Buy Thread<span id="WillrBuyThread"></span>' +
+                    'Sell Thread<span id="WillrSellThread"></span>' +
+                    '</div>'
+                )
+                $('#WillrEvents').append(
+                    '<input id="tradeWillr" type="checkbox">'
+                )
+            }
+            $('#WillrPerformance').text(trade_results.backtest.willr.performance)
+            $('#WillrPeriod').text(trade_results.backtest.willr.period)
+            $('#WillrBuyThread').text(trade_results.backtest.willr.buy_thread)
+            $('#WillrSellThread').text(trade_results.backtest.willr.sell_thread)
+        }
+
+        else if (trade_results.backtest.enable == false) {
+            $('#WillrResults').remove()
+            $('#tradeWillr').remove()
+        }
+    }
+
+    drawSignal() {
+        $('#WillrSignal').text(trade_results.today.willr_trade)
+    }
 }
 
 class Stochf {
@@ -567,6 +1151,18 @@ class Stochf {
         });
         $("#inputStochfPeriod2").change(function () {
             config.stochf.periods[1] = this.value;
+            send();
+        });
+        $(document).on('change', '#tradeStochf', function () {
+            if (this.checked === true) {
+                config.events.enable = true;
+                config.events.stochf.enable = true;
+            }
+            else {
+                config.events.stochf.enable = false;
+                eventsEnable()
+                $('#StochfNowProfit').text('')
+            }
             send();
         });
     }
@@ -598,6 +1194,29 @@ class Stochf {
         dataTable.addColumn('number', '%K_%D Thread');
     }
 
+    addEventColums(data, dataTable) {
+        var profit;
+        config.dataTable.index += 1;
+        config.events.stochf.indexes[0] = config.dataTable.index;
+        config.dataTable.index += 1;
+        config.events.stochf.indexes[1] = config.dataTable.index;
+        config.events.index += 1;
+        config.events.stochf.index = config.events.index
+
+        config.events.stochf.values = data['events']['stochf_event']['signals'];
+        if (config.events.stochf.values != undefined) {
+            config.events.stochf.first = config.events.stochf.values.shift();
+        }
+
+        dataTable.addColumn('number', 'Marker');
+        dataTable.addColumn({ type: 'string', role: 'annotation' });
+
+        if (data['events']['stochf_event']['profit'] != undefined) {
+            profit = data['events']['stochf_event']['profit']
+            $('#StochfNowProfit').text(profit)
+        }
+    }
+
     addData(datas, i) {
         datas.push(config.stochf.up);
         for (var j = 0; j < config.stochf.values.length; j++) {
@@ -608,6 +1227,23 @@ class Stochf {
             }
         }
         datas.push(config.stochf.down);
+    }
+
+    addEventData(datas, candle) {
+        var event = config.events.stochf.first
+        if (event == undefined) {
+            datas.push(null);
+            datas.push(null);
+        }
+        else if (event.signal_date == candle.date) {
+            datas.push(candle.high);
+            datas.push('(stcf)' + event.side);
+            config.events.stochf.first = config.events.stochf.values.shift();
+        }
+        else {
+            datas.push(null);
+            datas.push(null);
+        }
     }
 
     drawChart(charts) {
@@ -641,6 +1277,50 @@ class Stochf {
         });
         charts.push(stochfChart)
     }
+
+    drawEvents(options, view) {
+        options.series[config.events.stochf.indexes[0] - config.events.stochf.index + 1] = {
+            'type': 'line',
+            tooltip: 'none',
+            enableInteractivity: false,
+            lineWidth: 0
+        };
+        view.columns.push(config.candlestick.numViews + config.events.stochf.indexes[0]);
+        view.columns.push(config.candlestick.numViews + config.events.stochf.indexes[1]);
+    }
+
+    drawParams() {
+        if (trade_results.backtest.enable == true) {
+            if ($('#StochfParams').children('div').length == 4) {
+                $('#StochfParams').prepend(
+                    '<div id="StochfResults">' +
+                    '[Results] Performace: <span id="StochfPerformance"></span><br>' +
+                    'Fastk Period<span id="StochfFastk"></span>' +
+                    'Fastd Period<span id="StochfFastd"></span>' +
+                    'Buy Thread<span id="StochfBuyThread"></span>' +
+                    'Sell Thread<span id="StochfSellThread"></span>' +
+                    '</div>'
+                )
+                $('#StochfEvents').append(
+                    '<input id="tradeStochf" type="checkbox">'
+                )
+            }
+            $('#StochfPerformance').text(trade_results.backtest.stochf.performance)
+            $('#StochfFastk').text(trade_results.backtest.stochf.fastk_period)
+            $('#StochfFastd').text(trade_results.backtest.stochf.fastd_period)
+            $('#StochfBuyThread').text(trade_results.backtest.stochf.buy_thread)
+            $('#StochfSellThread').text(trade_results.backtest.stochf.sell_thread)
+        }
+
+        else if (trade_results.backtest.enable == false) {
+            $('#StochfResults').remove()
+            $('#tradeStochf').remove()
+        }
+    }
+
+    drawSignal() {
+        $('#StochfSignal').text(trade_results.today.stochf_trade)
+    }
 }
 
 class Stoch {
@@ -664,6 +1344,18 @@ class Stoch {
         });
         $("#inputStochPeriod3").change(function () {
             config.stoch.periods[2] = this.value;
+            send();
+        });
+        $(document).on('change', '#tradeStoch', function () {
+            if (this.checked === true) {
+                config.events.enable = true;
+                config.events.stoch.enable = true;
+            }
+            else {
+                config.events.stoch.enable = false;
+                eventsEnable()
+                $('#StochNowProfit').text('')
+            }
             send();
         });
     }
@@ -697,6 +1389,29 @@ class Stoch {
         dataTable.addColumn('number', 'slow%K_slow%D Thread');
     }
 
+    addEventColums(data, dataTable) {
+        var profit;
+        config.dataTable.index += 1;
+        config.events.stoch.indexes[0] = config.dataTable.index;
+        config.dataTable.index += 1;
+        config.events.stoch.indexes[1] = config.dataTable.index;
+        config.events.index += 1;
+        config.events.stoch.index = config.events.index
+
+        config.events.stoch.values = data['events']['stoch_event']['signals'];
+        if (config.events.stoch.values != undefined) {
+            config.events.stoch.first = config.events.stoch.values.shift();
+        }
+
+        dataTable.addColumn('number', 'Marker');
+        dataTable.addColumn({ type: 'string', role: 'annotation' });
+
+        if (data['events']['stoch_event']['profit'] != undefined) {
+            profit = data['events']['stoch_event']['profit']
+            $('#StochNowProfit').text(profit)
+        }
+    }
+
     addData(datas, i) {
         datas.push(config.stoch.up);
         for (var j = 0; j < config.stoch.values.length; j++) {
@@ -707,6 +1422,23 @@ class Stoch {
             }
         }
         datas.push(config.stoch.down);
+    }
+
+    addEventData(datas, candle) {
+        var event = config.events.stoch.first
+        if (event == undefined) {
+            datas.push(null);
+            datas.push(null);
+        }
+        else if (event.signal_date == candle.date) {
+            datas.push(candle.high);
+            datas.push('(stc)' + event.side);
+            config.events.stoch.first = config.events.stoch.values.shift();
+        }
+        else {
+            datas.push(null);
+            datas.push(null);
+        }
     }
 
     drawChart(charts) {
@@ -739,5 +1471,51 @@ class Stoch {
             }
         });
         charts.push(stochChart)
+    }
+
+    drawEvents(options, view) {
+        options.series[config.events.stoch.indexes[0] - config.events.stoch.index + 1] = {
+            'type': 'line',
+            tooltip: 'none',
+            enableInteractivity: false,
+            lineWidth: 0
+        };
+        view.columns.push(config.candlestick.numViews + config.events.stoch.indexes[0]);
+        view.columns.push(config.candlestick.numViews + config.events.stoch.indexes[1]);
+    }
+
+    drawParams() {
+        if (trade_results.backtest.enable == true) {
+            if ($('#StochParams').children('div').length == 5) {
+                $('#StochParams').prepend(
+                    '<div id="StochResults">' +
+                    '[Results] Performace: <span id="StochPerformance"></span><br>' +
+                    'Fastk Period<span id="StochFastk"></span>' +
+                    'Slowk Period<span id="StochSlowk"></span>' +
+                    'Slowd Period<span id="StochSlowd"></span>' +
+                    'Buy Thread<span id="StochBuyThread"></span>' +
+                    'Sell Thread<span id="StochSellThread"></span>' +
+                    '</div>'
+                )
+                $('#StochEvents').append(
+                    '<input id="tradeStoch" type="checkbox">'
+                )
+            }
+            $('#StochPerformance').text(trade_results.backtest.stoch.performance)
+            $('#StochFastk').text(trade_results.backtest.stoch.fastk_period)
+            $('#StochSlowk').text(trade_results.backtest.stoch.slowk_period)
+            $('#StochSlowd').text(trade_results.backtest.stoch.slowd_perod)
+            $('#StochBuyThread').text(trade_results.backtest.stoch.buy_thread)
+            $('#StochSellThread').text(trade_results.backtest.stoch.sell_thread)
+        }
+
+        else if (trade_results.backtest.enable == false) {
+            $('#StochResults').remove()
+            $('#tradeStoch').remove()
+        }
+    }
+
+    drawSignal() {
+        $('#StochSignal').text(trade_results.today.stoch_trade)
     }
 }

@@ -3,6 +3,7 @@ from flask import jsonify
 from flask import render_template
 from flask import request
 import logging
+from queue import Queue
 
 from dict2obj import Dict2Obj
 
@@ -13,11 +14,11 @@ from app.models.base import Session
 from utils.utils import bool_from_str
 import settings
 
-
 app = Flask(__name__, static_folder='../../static',
             template_folder='../../templates')
 
 logger = logging.getLogger(__name__)
+queue = Queue()
 
 
 @app.teardown_appcontext
@@ -36,21 +37,20 @@ def run():
 
 @app.route('/candle', methods=['GET'])
 # chart request
-def cnadle_api():
-    logger.info('action candle_api: accessed')
-    status = bool_from_str(request.args.get('status'))
+def candle_api():
+    get_status = bool_from_str(request.args.get('status'))
     stock_code = request.args.get('stockcode')
     duration = request.args.get('duration')
-    logger.info(
-        'action candle_api\n'
-        '<query_params>\n'
-        'status: {}\n'
-        'stock_code: {}\n'
-        'duration: {}'.format(status, stock_code, duration))
+    logger.info('######action candle_api: access -> '
+                'get_status: {} stock_code: {} duration: {}#####'.format(
+                    get_status, stock_code, duration))
 
-    if status:
+    if get_status:
+        logger.info('######action candle_api: stockdata get start######')
         get_stock_data = GetStockPrice(stock_code=stock_code)
         get_stock_data.save_in_database()
+        logger.info('######action candle_api: stockdata get end######')
+        queue.put(AI(code=stock_code))
 
     df = DataFrameCandle(code=stock_code, duration=duration)
 
@@ -196,18 +196,29 @@ def cnadle_api():
         df.add_stoch(fastk_period=fastk_period,
                      slowk_period=slowk_period, slowd_period=slowd_period)
 
-    logger.info(
-        'action candle_api\n'
-        '<query_params_indicator>\n'
-        'sma: {}\n'
-        'ema: {}\n'
-        'bb: {}\n'
-        'ichimoku: {}\n'
-        'rsi: {}\n'
-        'macd: {}\n'
-        'willr: {}\n'
-        'stochf: {}\n'
-        'stoch: {}'.format(sma, ema, bbands, ichimoku, rsi, macd, willr, stochf, stoch))
+    events = request.args.get('events')
+    if events:
+        ema_events_enable = bool_from_str(
+            request.args.get('EmaEventsEnable'))
+        bb_events_enable = bool_from_str(
+            request.args.get('BBandsEventsEnable'))
+        ichimoku_events_enable = bool_from_str(
+            request.args.get('IchimokuEventsEnable'))
+        rsi_events_enable = bool_from_str(
+            request.args.get('RsiEventsEnable'))
+        macd_events_enable = bool_from_str(
+            request.args.get('MacdEventsEnable'))
+        willr_events_enable = bool_from_str(
+            request.args.get('WillrEventsEnable'))
+        stochf_events_enable = bool_from_str(
+            request.args.get('StochfEventsEnable'))
+        stoch_events_enable = bool_from_str(
+            request.args.get('StochEventsEnable'))
+        df.add_each_event(
+            ema_enable=ema_events_enable, bb_enable=bb_events_enable,
+            ichimoku_enable=ichimoku_events_enable, rsi_enble=rsi_events_enable,
+            macd_enable=macd_events_enable, willr_enable=willr_events_enable,
+            stochf_enable=stochf_events_enable, stoch_enable=stoch_events_enable)
 
     return jsonify(df.chart_values), 200
 
@@ -215,17 +226,20 @@ def cnadle_api():
 @app.route('/trade', methods=['GET'])
 # trade and backtest request
 def trade_api():
+    get_status = bool_from_str(request.args.get('status'))
     stock_code = request.args.get('stockcode')
-    trade = request.args.get('trade')
+    trade = bool_from_str(request.args.get('trade'))
     backtest = bool_from_str(request.args.get('backtest'))
-    logger.info(
-        'action trade_api\n'
-        '<query_params>\n'
-        'stock_code: {}\n'
-        'trade: {}\n'
-        'backtest: {}'.format(stock_code, trade, backtest))
+    logger.info('#####action trade_api: access -> '
+                'get_status: {} stock_code: {} trade: {} backtest: {}#####'.format(
+                    get_status, stock_code, trade, backtest))
 
-    ai = AI(code=stock_code)
+    if get_status:
+        logger.info('#####action trade_api: waiting stockdata got#####')
+        ai = queue.get()
+        logger.info('#####action trade_api: finish stodata got and get AI#####')
+    else:
+        ai = AI(code=stock_code)
 
     if trade and backtest:
         ema_status, ema_params = CreateBackTestParams.ema_params(
@@ -246,11 +260,11 @@ def trade_api():
 
         rsi_status, rsi_params = CreateBackTestParams.rsi_params(
             str_rsi_period_low=request.args.get('rsiBacktest1'),
-            str_rsi_period_up=request.args.get('rsiBacktest1'),
-            str_rsi_buy_thred_low=request.args.get('rsiBacktest1'),
-            str_rsi_buy_thred_up=request.args.get('rsiBacktest1'),
-            str_rsi_sell_thred_low=request.args.get('rsiBacktest1'),
-            str_rsi_sell_thred_up=request.args.get('rsiBacktest1'))
+            str_rsi_period_up=request.args.get('rsiBacktest2'),
+            str_rsi_buy_thred_low=request.args.get('rsiBacktest3'),
+            str_rsi_buy_thred_up=request.args.get('rsiBacktest4'),
+            str_rsi_sell_thred_low=request.args.get('rsiBacktest5'),
+            str_rsi_sell_thred_up=request.args.get('rsiBacktest6'))
         if not rsi_status:
             return jsonify(rsi_params), 400
 
@@ -311,16 +325,16 @@ def trade_api():
         today_trade = ai.trade()
 
     if today_trade is None:
-        return jsonify(ai.df.trade_values), 400
+        return jsonify(ai.df.trade_values), 200
 
     ai.df.add_params()
-    ai.df.each_event = today_trade
+    ai.df.today_trade = today_trade
 
-    return jsonify(ai.df.trade_values), 400
+    return jsonify(ai.df.trade_values), 200
 
 
 class CreateBackTestParams(object):
-    @ staticmethod
+    @staticmethod
     def ema_params(str_ema_short_period_low, str_ema_short_period_up,
                    str_ema_long_period_low, str_ema_long_period_up):
         # evaluate short period params
@@ -370,12 +384,9 @@ class CreateBackTestParams(object):
             return False, {'message': message}
 
         logger.info(
-            'action trade_api\n'
-            '<ema-params>\n'
-            'short_period_low: {}\n'
-            'short_period_up: {}\n'
-            'long_period_low :{}\n'
-            'long_period_up :{}'.format(short_period_low, short_period_up, long_period_low, long_period_up))
+            '\n#####action: trade_api -> ema params#####\n'
+            'short_period_low: {} short_period_up: {} long_period_low :{} long_period_up :{}'.format(
+                short_period_low, short_period_up, long_period_low, long_period_up))
 
         ema_params = Dict2Obj(
             {'ema1': short_period_low, 'ema2': short_period_up,
@@ -383,7 +394,7 @@ class CreateBackTestParams(object):
 
         return True, ema_params
 
-    @ staticmethod
+    @staticmethod
     def bb_params(str_n_low, str_n_up, str_k_low, str_k_up):
         # evaluate n params
         if not str_n_low:
@@ -432,19 +443,15 @@ class CreateBackTestParams(object):
             return False, {'message': message}
 
         logger.info(
-            'action trade_api\n'
-            '<bb-params>\n'
-            'n_low: {}\n'
-            'n_up: {}\n'
-            'k_low :{}\n'
-            'k_up :{}'.format(n_low, n_up, k_low, k_up))
+            '\n#####action: trade_api -> bb params#####\n'
+            'n_low: {} n_up: {} k_low :{} k_up :{}'.format(n_low, n_up, k_low, k_up))
 
         bb_params = Dict2Obj(
             {'bb1': n_low, 'bb2': n_up, 'bb3': k_low, 'bb4': k_up})
 
         return True, bb_params
 
-    @ staticmethod
+    @staticmethod
     def rsi_params(str_rsi_period_low, str_rsi_period_up,
                    str_rsi_buy_thred_low, str_rsi_buy_thred_up,
                    str_rsi_sell_thred_low, str_rsi_sell_thred_up):
@@ -517,14 +524,10 @@ class CreateBackTestParams(object):
             return False, {'message': message}
 
         logger.info(
-            'action trade_api\n'
-            '<rsi-params>\n'
-            'rsi_period_low: {}\n'
-            'rsi_period_up: {}\n'
-            'rsi_buy_thread_low :{}\n'
-            'rsi_buy_thread_up :{}\n'
-            'rsi_sell_thread_low :{}\n'
-            'rsi_sell_thread_up :{}'.format(
+            '\n#####action: trade_api -> rsi params#####\n'
+            'rsi_period_low: {} rsi_period_up: {}'
+            'rsi_buy_thread_low :{} rsi_buy_thread_up :{}'
+            'rsi_sell_thread_low :{} rsi_sell_thread_up :{}'.format(
                 rsi_period_low, rsi_period_up,
                 rsi_buy_thread_low, rsi_buy_thread_up,
                 rsi_sell_thread_low, rsi_sell_thread_up))
@@ -536,7 +539,7 @@ class CreateBackTestParams(object):
 
         return True, rsi_params
 
-    @ staticmethod
+    @staticmethod
     def macd_params(str_macd_fast_period_low, str_macd_fast_period_up,
                     str_macd_slow_period_low, str_macd_slow_period_up,
                     str_macd_signal_period_low, str_macd_signal_period_up):
@@ -609,14 +612,10 @@ class CreateBackTestParams(object):
             return False, {'message': message}
 
         logger.info(
-            'action trade_api\n'
-            '<macd-params>\n'
-            'fast_period_low: {}\n'
-            'fast_period_up: {}\n'
-            'slow_period_low :{}\n'
-            'slow_period_up :{}\n'
-            'signal_period_low :{}\n'
-            'signal_period_up :{}'.format(
+            '\n#####action: trade_api -> macd params#####\n'
+            'fast_period_low: {} fast_period_up: {}'
+            'slow_period_low :{} slow_period_up :{}'
+            'signal_period_low :{} signal_period_up :{}'.format(
                 macd_fast_period_low, macd_fast_period_up,
                 macd_slow_period_low, macd_slow_period_up,
                 macd_signal_period_low, macd_signal_period_up))
@@ -628,7 +627,7 @@ class CreateBackTestParams(object):
 
         return True, macd_params
 
-    @ staticmethod
+    @staticmethod
     def willr_params(str_willr_period_low, str_willr_period_up,
                      str_willr_buy_thred_low, str_willr_buy_thred_up,
                      str_willr_sell_thred_low, str_willr_sell_thred_up):
@@ -701,14 +700,10 @@ class CreateBackTestParams(object):
             return False, {'message': message}
 
         logger.info(
-            'action trade_api\n'
-            '<willr-params>\n'
-            'willr_period_low: {}\n'
-            'willr_period_up: {}\n'
-            'willr_buy_thread_low :{}\n'
-            'willr_buy_thread_up :{}\n'
-            'willr_sell_thread_low :{}\n'
-            'willr_sell_thread_up :{}'.format(
+            '\n#####action: trade_api -> willr params#####\n'
+            'willr_period_low: {} willr_period_up: {}'
+            'willr_buy_thread_low :{} willr_buy_thread_up :{}'
+            'willr_sell_thread_low :{} willr_sell_thread_up :{}'.format(
                 willr_period_low, willr_period_up,
                 willr_buy_thread_low, willr_buy_thread_up,
                 willr_sell_thread_low, willr_sell_thread_up))
@@ -720,7 +715,7 @@ class CreateBackTestParams(object):
 
         return True, willr_params
 
-    @ staticmethod
+    @staticmethod
     def stochf_params(str_stochf_fastk_period_low, str_stochf_fastk_period_up,
                       str_stochf_fastd_period_low, str_stochf_fastd_period_up,
                       str_stochf_buy_thread_low, str_stochf_buy_thread_up,
@@ -816,16 +811,11 @@ class CreateBackTestParams(object):
             return False, {'message': message}
 
         logger.info(
-            'action trade_api\n'
-            '<stochf-params>\n'
-            'stochf_fastk_period_low: {}\n'
-            'stochf_fastk_period_up: {}\n'
-            'stochf_fastd_period_low :{}\n'
-            'stochf_fastd_period_up :{}\n'
-            'stochf_buy_thread_low :{}\n'
-            'stochf_buy_thread_up :{}\n'
-            'stochf_sell_thread_low :{}\n'
-            'stochf_sell_thread_up :{}'.format(
+            '\n#####action: trade_api -> stochf params#####\n'
+            'stochf_fastk_period_low: {} stochf_fastk_period_up: {}'
+            'stochf_fastd_period_low :{} stochf_fastd_period_up :{}'
+            'stochf_buy_thread_low :{} stochf_buy_thread_up :{}'
+            'stochf_sell_thread_low :{} stochf_sell_thread_up :{}'.format(
                 stochf_fastk_period_low, stochf_fastk_period_up,
                 stochf_fastd_period_low, stochf_fastd_period_up,
                 stochf_buy_thread_low, stochf_buy_thread_up,
@@ -839,7 +829,7 @@ class CreateBackTestParams(object):
 
         return True, stochf_params
 
-    @ staticmethod
+    @staticmethod
     def stoch_params(str_stoch_fastk_period_low, str_stoch_fastk_period_up,
                      str_stoch_slowk_period_low, str_stoch_slowk_period_up,
                      str_stoch_slowd_period_low, str_stoch_slowd_period_up,
@@ -958,18 +948,12 @@ class CreateBackTestParams(object):
             return False, {'message': message}
 
         logger.info(
-            'action trade_api\n'
-            '<stoch-params>\n'
-            'stoch_fastk_period_low: {}\n'
-            'stoch_fastk_period_up: {}\n'
-            'stoch_slowk_period_low: {}\n'
-            'stoch_slowk_period_up: {}\n'
-            'stoch_slowd_period_low :{}\n'
-            'stoch_slowd_period_up :{}\n'
-            'stoch_buy_thread_low :{}\n'
-            'stoch_buy_thread_up :{}\n'
-            'stoch_sell_thread_low :{}\n'
-            'stoch_sell_thread_up :{}'.format(
+            '#####action: trade_api -> stoch params#####\n'
+            'stoch_fastk_period_low: {} stoch_fastk_period_up: {}'
+            'stoch_slowk_period_low: {} stoch_slowk_period_up: {}'
+            'stoch_slowd_period_low :{} stoch_slowd_period_up :{}'
+            'stoch_buy_thread_low :{} stoch_buy_thread_up :{}'
+            'stoch_sell_thread_low :{} stoch_sell_thread_up :{}'.format(
                 stoch_fastk_period_low, stoch_fastk_period_up,
                 stoch_slowk_period_low, stoch_slowk_period_up,
                 stoch_slowd_period_low, stoch_slowd_period_up,

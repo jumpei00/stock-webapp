@@ -41,15 +41,16 @@ def candle_api():
     get_status = bool_from_str(request.args.get('status'))
     stock_code = request.args.get('stockcode')
     duration = request.args.get('duration')
-    logger.info('######action candle_api: access -> '
-                'get_status: {} stock_code: {} duration: {}#####'.format(
-                    get_status, stock_code, duration))
+
+    logger.info(
+        '######action [candle_api]: '
+        'access get_status={} stock_code={} duration={}#####'.format(get_status, stock_code, duration))
 
     if get_status:
-        logger.info('######action candle_api: stockdata get start######')
+        logger.info('######action [candle_api]: stockdata get Start######')
         get_stock_data = GetStockPrice(stock_code=stock_code)
         get_stock_data.save_in_database()
-        logger.info('######action candle_api: stockdata get end######')
+        logger.info('######action [candle_api]: stockdata get End######')
         queue.put(AI(code=stock_code))
 
     df = DataFrameCandle(code=stock_code, duration=duration)
@@ -230,14 +231,14 @@ def trade_api():
     stock_code = request.args.get('stockcode')
     trade = bool_from_str(request.args.get('trade'))
     backtest = bool_from_str(request.args.get('backtest'))
-    logger.info('#####action trade_api: access -> '
-                'get_status: {} stock_code: {} trade: {} backtest: {}#####'.format(
-                    get_status, stock_code, trade, backtest))
+
+    logger.info('#####action [trade_api]: '
+                'access get_status={} stock_code={} trade={} backtest={}#####'.format(get_status, stock_code, trade, backtest))
 
     if get_status:
-        logger.info('#####action trade_api: waiting stockdata got#####')
+        logger.info('#####action [trade_api]: waiting stockdata got#####')
         ai = queue.get()
-        logger.info('#####action trade_api: finish stodata got and get AI#####')
+        logger.info('#####action [trade_api]: finish stodata got and get AI#####')
     else:
         ai = AI(code=stock_code)
 
@@ -339,53 +340,53 @@ class CreateBackTestParams(object):
                    str_ema_long_period_low, str_ema_long_period_up):
         # evaluate short period params
         if not str_ema_short_period_low:
-            message = 'Error: Not low short period of EMA'
+            message = 'Error!! Not low short period of EMA'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> ema_params: {}'.format(message))
+                '!!!!!action [trade_api -> CreateBackTestParams -> ema_params]: {}!!!!!'.format(message))
             return False, {'message': message}
         else:
             short_period_low = abs(int(str_ema_short_period_low))
 
         if not str_ema_short_period_up:
+            message = 'Error!! Not up short period of EMA'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> ema_params: {}'.format(message))
-            message = 'Error: Not up short period of EMA'
+                '!!!!!action [trade_api -> CreateBackTestParams -> ema_params]: {}!!!!!'.format(message))
             return False, {'message': message}
         else:
             short_period_up = abs(int(str_ema_short_period_up))
 
         # evaluate long period params
         if not str_ema_long_period_low:
+            message = 'Error!! Not low long period of EMA'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> ema_params: {}'.format(message))
-            message = 'Error: Not low long period of EMA'
+                '!!!!!action [trade_api -> CreateBackTestParams -> ema_params]: {}!!!!!'.format(message))
             return False, {'message': message}
         else:
             long_period_low = abs(int(str_ema_long_period_low))
 
         if not str_ema_long_period_up:
+            message = 'Error!! Not up long period of EMA'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> ema_params: {}'.format(message))
-            message = 'Error: Not up long period of EMA'
+                '!!!!!action [trade_api -> CreateBackTestParams -> ema_params]: {}!!!!!'.format(message))
             return False, {'message': message}
         else:
             long_period_up = abs(int(str_ema_long_period_up))
 
         # compare large number of params
         if short_period_low > short_period_up:
+            message = 'Error!! low short period of EMA is large more than up short period of EMA'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> ema_params: {}'.format(message))
-            message = 'Error: low short period of EMA is large more than up short period of EMA'
+                '!!!!!action [trade_api -> CreateBackTestParams -> ema_params]: {}!!!!!'.format(message))
             return False, {'message': message}
         if long_period_low > long_period_up:
+            message = 'Error!! low long period of EMA is large more than up long period of EMA'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> ema_params: {}'.format(message))
-            message = 'Error: low long period of EMA is large more than up long period of EMA'
+                '!!!!!action trade_api -> CreateBackTestParams -> ema_params: {}!!!!!'.format(message))
             return False, {'message': message}
 
         logger.info(
-            '\n#####action: trade_api -> ema params#####\n'
-            'short_period_low: {} short_period_up: {} long_period_low :{} long_period_up :{}'.format(
+            '$$$$$action: [trade_api -> ema params]: '
+            'short_period_low={} short_period_up={} long_period_low={} long_period_up={}$$$$$'.format(
                 short_period_low, short_period_up, long_period_low, long_period_up))
 
         ema_params = Dict2Obj(

@@ -1,4 +1,6 @@
 from datetime import datetime
+from multiprocessing import Pool
+from multiprocessing import cpu_count
 import pandas as pd
 import logging
 
@@ -15,6 +17,7 @@ logger = logging.getLogger(__name__)
 class AI(object):
     def __init__(self, code):
         self.code = code
+        self.cpu_count_num = cpu_count()
         self.df = DataFrameCandle(code=self.code)
         self.back_test_params = self.df.back_test_params.get_params
         self.backtest_serializer = BackTestingSerializer(
@@ -112,80 +115,62 @@ class AI(object):
     def optimize_params(self, test_params_ema, test_params_bb, test_params_rsi,
                         test_params_macd, test_params_willr, test_params_stochf, test_params_stoch):
 
-        ema_performance, \
-            ema_short_period, \
-            ema_long_period = \
-            self.backtest_serializer.ema.optimization(
-                short_period_low=test_params_ema.ema1, short_period_up=test_params_ema.ema2,
-                long_period_low=test_params_ema.ema3, long_period_up=test_params_ema.ema4
-            )
+        # multiprocessing
+        with Pool(self.cpu_count_num) as pool:
+            ema_pool = pool.apply_async(
+                self.backtest_serializer.ema.optimization,
+                (test_params_ema.ema1, test_params_ema.ema2,
+                 test_params_ema.ema3, test_params_ema.ema4, ))
 
-        bb_performance, \
-            bb_n, \
-            bb_k = \
-            self.backtest_serializer.bbands.optimization(
-                n_low=test_params_bb.bb1, n_up=test_params_bb.bb2,
-                k_low=test_params_bb.bb3, k_up=test_params_bb.bb4
-            )
+            bb_pool = pool.apply_async(
+                self.backtest_serializer.bbands.optimization,
+                (test_params_bb.bb1, test_params_bb.bb2,
+                 test_params_bb.bb3, test_params_bb.bb4, ))
 
-        ichimoku_performance = \
-            self.backtest_serializer.ichimoku.optimization()
+            ichimoku_pool = pool.apply_async(
+                self.backtest_serializer.ichimoku.optimization)
 
-        rsi_performance, \
-            rsi_period, \
-            rsi_buy_thread, \
-            rsi_sell_thread = \
-            self.backtest_serializer.rsi.optimization(
-                period_low=test_params_rsi.rsi1, period_up=test_params_rsi.rsi2,
-                buy_thread_low=test_params_rsi.rsi3, buy_thread_up=test_params_rsi.rsi4,
-                sell_thread_low=test_params_rsi.rsi5, sell_thread_up=test_params_rsi.rsi6
-            )
+            rsi_pool = pool.apply_async(
+                self.backtest_serializer.rsi.optimization,
+                (test_params_rsi.rsi1, test_params_rsi.rsi2,
+                 test_params_rsi.rsi3, test_params_rsi.rsi4,
+                 test_params_rsi.rsi5, test_params_rsi.rsi6, ))
 
-        macd_performance, \
-            macd_fast_period, \
-            macd_slow_period, \
-            macd_signal_period = \
-            self.backtest_serializer.macd.optimization(
-                fast_period_low=test_params_macd.macd1, fast_period_up=test_params_macd.macd2,
-                slow_period_low=test_params_macd.macd3, slow_period_up=test_params_macd.macd4,
-                signal_period_low=test_params_macd.macd5, signal_period_up=test_params_macd.macd6
-            )
+            macd_pool = pool.apply_async(
+                self.backtest_serializer.macd.optimization,
+                (test_params_macd.macd1, test_params_macd.macd2,
+                 test_params_macd.macd3, test_params_macd.macd4,
+                 test_params_macd.macd5, test_params_macd.macd6, ))
 
-        willr_performance, \
-            willr_period, \
-            willr_buy_thread, \
-            willr_sell_thread = \
-            self.backtest_serializer.willr.optimization(
-                period_low=test_params_willr.willr1, period_up=test_params_willr.willr2,
-                buy_thread_low=test_params_willr.willr3, buy_thread_up=test_params_willr.willr4,
-                sell_thread_low=test_params_willr.willr5, sell_thread_up=test_params_willr.willr6
-            )
+            willr_pool = pool.apply_async(
+                self.backtest_serializer.willr.optimization,
+                (test_params_willr.willr1, test_params_willr.willr2,
+                 test_params_willr.willr3, test_params_willr.willr4,
+                 test_params_willr.willr5, test_params_willr.willr6, ))
 
-        stochf_performance, \
-            stochf_fastk_period, \
-            stochf_fastd_period, \
-            stochf_buy_thread, \
-            stochf_sell_thread = \
-            self.backtest_serializer.stochf.optimization(
-                fastk_period_low=test_params_stochf.stochf1, fastk_period_up=test_params_stochf.stochf2,
-                fastd_period_low=test_params_stochf.stochf3, fastd_period_up=test_params_stochf.stochf4,
-                buy_thread_low=test_params_stochf.stochf5, buy_thread_up=test_params_stochf.stochf6,
-                sell_thread_low=test_params_stochf.stochf7, sell_thread_up=test_params_stochf.stochf8
-            )
+            stochf_pool = pool.apply_async(
+                self.backtest_serializer.stochf.optimization,
+                (test_params_stochf.stochf1, test_params_stochf.stochf2,
+                 test_params_stochf.stochf3, test_params_stochf.stochf4,
+                 test_params_stochf.stochf5, test_params_stochf.stochf6,
+                 test_params_stochf.stochf7, test_params_stochf.stochf8, ))
 
-        stoch_performance, \
-            stoch_fastk_period, \
-            stoch_slowk_period, \
-            stoch_slowd_period, \
-            stoch_buy_thread, \
-            stoch_sell_thread = \
-            self.backtest_serializer.stoch.optimization(
-                fastk_period_low=test_params_stoch.stoch1, fastk_period_up=test_params_stoch.stoch2,
-                slowk_period_low=test_params_stoch.stoch3, slowk_period_up=test_params_stoch.stoch4,
-                slowd_period_low=test_params_stoch.stoch5, slowd_period_up=test_params_stoch.stoch6,
-                buy_thread_low=test_params_stoch.stoch7, buy_thread_up=test_params_stoch.stoch8,
-                sell_thread_low=test_params_stoch.stoch9, sell_thread_up=test_params_stoch.stoch10
-            )
+            stoch_pool = pool.apply_async(
+                self.backtest_serializer.stoch.optimization,
+                (test_params_stoch.stoch1, test_params_stoch.stoch2,
+                 test_params_stoch.stoch3, test_params_stoch.stoch4,
+                 test_params_stoch.stoch5, test_params_stoch.stoch6,
+                 test_params_stoch.stoch7, test_params_stoch.stoch8,
+                 test_params_stoch.stoch9, test_params_stoch.stoch10,))
+
+            ema_performance, ema_short_period, ema_long_period = ema_pool.get()
+            bb_performance, bb_n, bb_k = bb_pool.get()
+            ichimoku_performance = ichimoku_pool.get()
+            rsi_performance, rsi_period, rsi_buy_thread, rsi_sell_thread = rsi_pool.get()
+            macd_performance, macd_fast_period, macd_slow_period, macd_signal_period = macd_pool.get()
+            willr_performance, willr_period, willr_buy_thread, willr_sell_thread = willr_pool.get()
+            stochf_performance, stochf_fastk_period, stochf_fastd_period, stochf_buy_thread, stochf_sell_thread = stochf_pool.get()
+            stoch_performance, stoch_fastk_period, stoch_slowk_period, stoch_slowd_period, stoch_buy_thread, stoch_sell_thread = stoch_pool.get()
 
         backtesting_time = datetime.now()
         optimize_params_list = [self.code,

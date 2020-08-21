@@ -1,3 +1,4 @@
+import logging
 from sqlalchemy import Column
 from sqlalchemy import DateTime
 from sqlalchemy import desc
@@ -14,6 +15,8 @@ from app.models.base import Base
 from app.models.base import engine
 from app.models.base import session_scope
 import constants
+
+logger = logging.getLogger(__name__)
 
 
 def factory_signalevent_class(base):
@@ -257,7 +260,8 @@ class BackTestParamsController(object):
 
     def create_params(self, df_params):
         LatestBackTestResults.delete(code=self.code)
-        LatestBackTestResults.create_params(code=self.code, df_params=df_params)
+        LatestBackTestResults.create_params(
+            code=self.code, df_params=df_params)
 
     @property
     def get_params(self):
@@ -331,9 +335,11 @@ class LatestBackTestResults(Base):
         try:
             df_params.to_sql(cls.__tablename__, con=engine,
                              index_label='date', if_exists='append')
-            return True
-        except IntegrityError:
-            return False
+        except IntegrityError as ie:
+            logger.warning(
+                '<action=LatestBackTestResults->>create_params>: {}'.format(ie))
+            raise
+        return True
 
     @classmethod
     def get_params(cls, code):

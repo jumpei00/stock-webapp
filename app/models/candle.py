@@ -40,9 +40,11 @@ class StockData(Base):
         try:
             stock_df.to_sql(cls.__tablename__, con=engine, index_label='date',
                             if_exists='replace', dtype=Float_type())
-            return True
-        except IntegrityError:
-            return False
+        except IntegrityError as ie:
+            logger.error(
+                '<action=StockData->>create>: stockdata save error {}'.format(ie))
+            raise
+        return True
 
     @classmethod
     def get(cls, date):

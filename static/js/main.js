@@ -117,26 +117,6 @@ function send() {
             ichimoku.addColumns(data, dataTable)
         }
 
-        if (data['rsi'] != undefined) {
-            rsi.addColumns(data, dataTable)
-        }
-
-        if (data['macd'] != undefined) {
-            macd.addColumns(data, dataTable)
-        }
-
-        if (data['willr'] != undefined) {
-            willr.addColumns(data, dataTable)
-        }
-
-        if (data['stochf'] != undefined) {
-            stochf.addColumns(data, dataTable)
-        }
-
-        if (data['stoch'] != undefined) {
-            stoch.addColumns(data, dataTable)
-        }
-
         if (data['events'] != undefined) {
             if (data['events']['ema_event'] != undefined) {
                 ema.addEventColums(data, dataTable)
@@ -164,6 +144,26 @@ function send() {
             }
         }
 
+        if (data['rsi'] != undefined) {
+            rsi.addColumns(data, dataTable)
+        }
+
+        if (data['macd'] != undefined) {
+            macd.addColumns(data, dataTable)
+        }
+
+        if (data['willr'] != undefined) {
+            willr.addColumns(data, dataTable)
+        }
+
+        if (data['stochf'] != undefined) {
+            stochf.addColumns(data, dataTable)
+        }
+
+        if (data['stoch'] != undefined) {
+            stoch.addColumns(data, dataTable)
+        }
+
         // add datas of candles and indicators
         for (var i = 0; i < candles.length; i++) {
             var candle = candles[i];
@@ -186,26 +186,6 @@ function send() {
 
             if (data["ichimoku"] != undefined) {
                 ichimoku.addData(datas, i)
-            }
-
-            if (data["rsi"] != undefined) {
-                rsi.addData(datas, i)
-            }
-
-            if (data["macd"] != undefined) {
-                macd.addData(datas, i)
-            }
-
-            if (data["willr"] != undefined) {
-                willr.addData(datas, i)
-            }
-
-            if (data["stochf"] != undefined) {
-                stochf.addData(datas, i)
-            }
-
-            if (data["stoch"] != undefined) {
-                stoch.addData(datas, i)
             }
 
             if (data["events"] != undefined) {
@@ -233,6 +213,26 @@ function send() {
                 if (data['events']['stoch_event'] != undefined) {
                     stoch.addEventData(datas, candle)
                 }
+            }
+
+            if (data["rsi"] != undefined) {
+                rsi.addData(datas, i)
+            }
+
+            if (data["macd"] != undefined) {
+                macd.addData(datas, i)
+            }
+
+            if (data["willr"] != undefined) {
+                willr.addData(datas, i)
+            }
+
+            if (data["stochf"] != undefined) {
+                stochf.addData(datas, i)
+            }
+
+            if (data["stoch"] != undefined) {
+                stoch.addData(datas, i)
             }
 
             googleChartData.push(datas);
@@ -359,6 +359,10 @@ function drawChart(dataTable) {
             }
         }
     });
+
+    console.log(options)
+    console.log(view)
+    console.log(charts)
 
     dashboard.bind(controlWrapper, charts);
     dashboard.draw(dataTable);

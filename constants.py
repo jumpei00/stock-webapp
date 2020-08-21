@@ -1,3 +1,6 @@
+KABUTAN_COL_DIC = {0: 'Date', 1: 'Open', 2: 'High', 3: 'Low', 4: 'Close', 5: 'Volume'}
+KABUTAN_COL_LIST = ['Open', 'High', 'Low', 'Close', 'Volume']
+
 BACKTEST = 'backtest'
 EMA = 'ema'
 BBANDS = 'bbands'

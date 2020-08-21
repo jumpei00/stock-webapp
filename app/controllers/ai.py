@@ -114,46 +114,8 @@ class AI(object):
 
     def optimize_params(self, test_params_ema, test_params_bb, test_params_rsi,
                         test_params_macd, test_params_willr, test_params_stochf, test_params_stoch):
-
         # multiprocessing
         with Pool(self.cpu_count_num) as pool:
-            ema_pool = pool.apply_async(
-                self.backtest_serializer.ema.optimization,
-                (test_params_ema.ema1, test_params_ema.ema2,
-                 test_params_ema.ema3, test_params_ema.ema4, ))
-
-            bb_pool = pool.apply_async(
-                self.backtest_serializer.bbands.optimization,
-                (test_params_bb.bb1, test_params_bb.bb2,
-                 test_params_bb.bb3, test_params_bb.bb4, ))
-
-            ichimoku_pool = pool.apply_async(
-                self.backtest_serializer.ichimoku.optimization)
-
-            rsi_pool = pool.apply_async(
-                self.backtest_serializer.rsi.optimization,
-                (test_params_rsi.rsi1, test_params_rsi.rsi2,
-                 test_params_rsi.rsi3, test_params_rsi.rsi4,
-                 test_params_rsi.rsi5, test_params_rsi.rsi6, ))
-
-            macd_pool = pool.apply_async(
-                self.backtest_serializer.macd.optimization,
-                (test_params_macd.macd1, test_params_macd.macd2,
-                 test_params_macd.macd3, test_params_macd.macd4,
-                 test_params_macd.macd5, test_params_macd.macd6, ))
-
-            willr_pool = pool.apply_async(
-                self.backtest_serializer.willr.optimization,
-                (test_params_willr.willr1, test_params_willr.willr2,
-                 test_params_willr.willr3, test_params_willr.willr4,
-                 test_params_willr.willr5, test_params_willr.willr6, ))
-
-            stochf_pool = pool.apply_async(
-                self.backtest_serializer.stochf.optimization,
-                (test_params_stochf.stochf1, test_params_stochf.stochf2,
-                 test_params_stochf.stochf3, test_params_stochf.stochf4,
-                 test_params_stochf.stochf5, test_params_stochf.stochf6,
-                 test_params_stochf.stochf7, test_params_stochf.stochf8, ))
 
             stoch_pool = pool.apply_async(
                 self.backtest_serializer.stoch.optimization,
@@ -163,14 +125,52 @@ class AI(object):
                  test_params_stoch.stoch7, test_params_stoch.stoch8,
                  test_params_stoch.stoch9, test_params_stoch.stoch10,))
 
-            ema_performance, ema_short_period, ema_long_period = ema_pool.get()
-            bb_performance, bb_n, bb_k = bb_pool.get()
-            ichimoku_performance = ichimoku_pool.get()
-            rsi_performance, rsi_period, rsi_buy_thread, rsi_sell_thread = rsi_pool.get()
-            macd_performance, macd_fast_period, macd_slow_period, macd_signal_period = macd_pool.get()
-            willr_performance, willr_period, willr_buy_thread, willr_sell_thread = willr_pool.get()
-            stochf_performance, stochf_fastk_period, stochf_fastd_period, stochf_buy_thread, stochf_sell_thread = stochf_pool.get()
+            stochf_pool = pool.apply_async(
+                self.backtest_serializer.stochf.optimization,
+                (test_params_stochf.stochf1, test_params_stochf.stochf2,
+                 test_params_stochf.stochf3, test_params_stochf.stochf4,
+                 test_params_stochf.stochf5, test_params_stochf.stochf6,
+                 test_params_stochf.stochf7, test_params_stochf.stochf8,))
+
+            macd_pool = pool.apply_async(
+                self.backtest_serializer.macd.optimization,
+                (test_params_macd.macd1, test_params_macd.macd2,
+                 test_params_macd.macd3, test_params_macd.macd4,
+                 test_params_macd.macd5, test_params_macd.macd6,))
+
+            rsi_pool = pool.apply_async(
+                self.backtest_serializer.rsi.optimization,
+                (test_params_rsi.rsi1, test_params_rsi.rsi2,
+                 test_params_rsi.rsi3, test_params_rsi.rsi4,
+                 test_params_rsi.rsi5, test_params_rsi.rsi6, ))
+
+            willr_pool = pool.apply_async(
+                self.backtest_serializer.willr.optimization,
+                (test_params_willr.willr1, test_params_willr.willr2,
+                 test_params_willr.willr3, test_params_willr.willr4,
+                 test_params_willr.willr5, test_params_willr.willr6,))
+
+            bb_pool = pool.apply_async(
+                self.backtest_serializer.bbands.optimization,
+                (test_params_bb.bb1, test_params_bb.bb2,
+                 test_params_bb.bb3, test_params_bb.bb4, ))
+
+            ema_pool = pool.apply_async(
+                self.backtest_serializer.ema.optimization,
+                (test_params_ema.ema1, test_params_ema.ema2,
+                 test_params_ema.ema3, test_params_ema.ema4, ))
+
+            ichimoku_pool = pool.apply_async(
+                self.backtest_serializer.ichimoku.optimization)
+
             stoch_performance, stoch_fastk_period, stoch_slowk_period, stoch_slowd_period, stoch_buy_thread, stoch_sell_thread = stoch_pool.get()
+            stochf_performance, stochf_fastk_period, stochf_fastd_period, stochf_buy_thread, stochf_sell_thread = stochf_pool.get()
+            macd_performance, macd_fast_period, macd_slow_period, macd_signal_period = macd_pool.get()
+            rsi_performance, rsi_period, rsi_buy_thread, rsi_sell_thread = rsi_pool.get()
+            willr_performance, willr_period, willr_buy_thread, willr_sell_thread = willr_pool.get()
+            bb_performance, bb_n, bb_k = bb_pool.get()
+            ema_performance, ema_short_period, ema_long_period = ema_pool.get()
+            ichimoku_performance = ichimoku_pool.get()
 
         backtesting_time = datetime.now()
         optimize_params_list = [self.code,

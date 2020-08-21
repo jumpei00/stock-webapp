@@ -23,7 +23,7 @@ def session_scope():
         yield session
         session.commit()
     except Exception as e:
-        logger.error(f'action=session_scope error={e}')
+        logger.error(f'<action=session_scope>: saving_error of stockdata {e}')
         session.rollback()
         raise
     finally:

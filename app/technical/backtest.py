@@ -88,7 +88,7 @@ class Ema(object):
 
     def optimization(self, short_period_low, short_period_up, long_period_low, long_period_up):
         logger.info(
-            '#####action Ema -> optimization: Ema backtest and params optimization Start#####')
+            '<action=Ema->>optimization>: Ema backtest and params optimization Start')
 
         performance = 0
         best_short_period = 0
@@ -108,7 +108,7 @@ class Ema(object):
                     best_long_period = long_period
 
         logger.info(
-            '#####action Ema -> optimization: Ema backtest and params optimization End#####')
+            '<action=Ema->>optimization>: Ema backtest and params optimization End')
 
         return performance, best_short_period, best_long_period
 
@@ -175,7 +175,7 @@ class BBands(object):
 
     def optimization(self, n_low, n_up, k_low, k_up):
         logger.info(
-            '#####action BBands -> optimization: BBands backtest and params optimization Start#####')
+            '<action=BBands->>optimization>: BBands backtest and params optimization Start')
 
         performance = 0
         best_n = 0
@@ -194,7 +194,7 @@ class BBands(object):
                     best_k = k
 
         logger.info(
-            '#####action BBands -> optimization: BBands backtest and params optimization End#####')
+            '<action=BBands->>optimization>: BBands backtest and params optimization End')
 
         return performance, best_n, best_k
 
@@ -263,14 +263,14 @@ class Ichimoku(object):
 
     def optimization(self):
         logger.info(
-            '#####action Ichimoku -> optimization: Ichimoku backtest and params optimization Start#####')
+            '<action=Ichimoku->>optimization>: Ichimoku backtest and params optimization Start')
 
         signal_envent_controller = self.back_test(backtest=True)
         if signal_envent_controller is None:
             return 0.0
 
         logger.info(
-            '#####action Ichimoku -> optimization: Ichimoku backtest and params optimization End#####')
+            '<action=Ichimoku->>optimization>: Ichimoku backtest and params optimization End')
 
         return signal_envent_controller.profit
 
@@ -339,7 +339,7 @@ class Rsi(object):
     def optimization(self, period_low, period_up,
                      buy_thread_low, buy_thread_up, sell_thread_low, sell_thread_up):
         logger.info(
-            '#####action Rsi -> optimization: Rsi backtest and params optimization Start#####')
+            '<action=Rsi->>optimization>: Rsi backtest and params optimization Start')
 
         performance = 0
         best_period = 0
@@ -365,7 +365,7 @@ class Rsi(object):
                         best_sell_thread = sell_thred
 
         logger.info(
-            '#####action Rsi -> optimization: Rsi backtest and params optimization End#####')
+            '<action=Rsi->>optimization>: Rsi backtest and params optimization End')
 
         return performance, best_period, best_buy_thread, best_sell_thread
 
@@ -435,7 +435,7 @@ class Macd(object):
     def optimization(self, fast_period_low, fast_period_up,
                      slow_period_low, slow_period_up, signal_period_low, signal_period_up):
         logger.info(
-            '#####action Macd -> optimization: Macd backtest and params optimization Start#####')
+            '<action=Macd->>optimization>: Macd backtest and params optimization Start')
 
         performance = 0
         best_fast_period = 0
@@ -461,7 +461,7 @@ class Macd(object):
                         best_signal_period = signal_period
 
         logger.info(
-            '#####action Macd -> optimization: Macd backtest and params optimization End#####')
+            '<action=Macd->>optimization>: Macd backtest and params optimization End')
 
         return performance, best_fast_period, best_slow_period, best_signal_period
 
@@ -533,7 +533,7 @@ class Willr(object):
     def optimization(self, period_low, period_up,
                      buy_thread_low, buy_thread_up, sell_thread_low, sell_thread_up):
         logger.info(
-            '#####action Willr -> optimization: Willr backtest and params optimization Start#####')
+            '<action=Willr->>optimization>: Willr backtest and params optimization Start')
 
         performance = 0
         best_period = 0
@@ -559,7 +559,7 @@ class Willr(object):
                         best_sell_thread = sell_thred
 
         logger.info(
-            '#####action Willr -> optimization: Willr backtest and params optimization End#####')
+            '<action=Willr->>optimization>: Willr backtest and params optimization End')
 
         return performance, best_period, best_buy_thread, best_sell_thread
 
@@ -629,7 +629,7 @@ class Stochf(object):
     def optimization(self, fastk_period_low, fastk_period_up, fastd_period_low, fastd_period_up,
                      buy_thread_low, buy_thread_up, sell_thread_low, sell_thread_up):
         logger.info(
-            '#####action Stochf -> optimization: Stochf backtest and params optimization Start#####')
+            '<action=Stochf->>optimization>: Stochf backtest and params optimization Start')
 
         performance = 0
         best_fastk_period = 0
@@ -659,7 +659,7 @@ class Stochf(object):
                             best_sell_thread = sell_thread
 
         logger.info(
-            '#####action Stochf -> optimization: Stochf backtest and params optimization End#####')
+            '<action=Stochf->optimization>: Stochf backtest and params optimization End')
 
         return performance, best_fastk_period, best_fastd_period, best_buy_thread, best_sell_thread
 
@@ -729,7 +729,7 @@ class Stoch(object):
     def optimization(self, fastk_period_low, fastk_period_up, slowk_period_low, slowk_period_up,
                      slowd_period_low, slowd_period_up, buy_thread_low, buy_thread_up, sell_thread_low, sell_thread_up):
         logger.info(
-            '#####action Stoch -> optimization: Stoch backtest and params optimization Start#####')
+            '<action=Stoch->optimization>: Stoch backtest and params optimization Start')
 
         performance = 0
         best_fastk_period = 0
@@ -763,6 +763,6 @@ class Stoch(object):
                                 best_sell_thread = sell_thread
 
         logger.info(
-            '#####action Stoch -> optimization: Stoch backtest and params optimization End#####')
+            '<action=Stoch->optimization>: Stoch backtest and params optimization End')
 
         return performance, best_fastk_period, best_slowk_period, best_slowd_period, best_buy_thread, best_sell_thread

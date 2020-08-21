@@ -42,16 +42,14 @@ def candle_api():
     stock_code = request.args.get('stockcode')
     duration = request.args.get('duration')
 
-    logger.info(
-        '######action [candle_api]: '
-        'access get_status={} stock_code={} duration={}#####'.format(get_status, stock_code, duration))
+    logger.info('<action=candle_api>: '
+                'access get_status={} stock_code={} duration={}'.format(get_status, stock_code, duration))
 
     if get_status:
-        logger.info('######action [candle_api]: stockdata get Start######')
         get_stock_data = GetStockPrice(stock_code=stock_code)
         get_stock_data.save_in_database()
-        logger.info('######action [candle_api]: stockdata get End######')
         queue.put(AI(code=stock_code))
+        logger.info('<action=candle_api>: put AI in queue')
 
     df = DataFrameCandle(code=stock_code, duration=duration)
 
@@ -232,13 +230,13 @@ def trade_api():
     trade = bool_from_str(request.args.get('trade'))
     backtest = bool_from_str(request.args.get('backtest'))
 
-    logger.info('#####action [trade_api]: '
-                'access get_status={} stock_code={} trade={} backtest={}#####'.format(get_status, stock_code, trade, backtest))
+    logger.info('<action=trade_api>: '
+                'access get_status={} stock_code={} trade={} backtest={}'.format(get_status, stock_code, trade, backtest))
 
     if get_status:
-        logger.info('#####action [trade_api]: waiting stockdata got#####')
+        logger.info('<action=trade_api>: waiting stockdata got')
         ai = queue.get()
-        logger.info('#####action [trade_api]: finish stodata got and get AI#####')
+        logger.info('<action=trade_api>: get AI')
     else:
         ai = AI(code=stock_code)
 
@@ -342,7 +340,7 @@ class CreateBackTestParams(object):
         if not str_ema_short_period_low:
             message = 'Error!! Not low short period of EMA'
             logger.warning(
-                '!!!!!action [trade_api -> CreateBackTestParams -> ema_params]: {}!!!!!'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>ema_params!!!!!: {}'.format(message))
             return False, {'message': message}
         else:
             short_period_low = abs(int(str_ema_short_period_low))
@@ -350,7 +348,7 @@ class CreateBackTestParams(object):
         if not str_ema_short_period_up:
             message = 'Error!! Not up short period of EMA'
             logger.warning(
-                '!!!!!action [trade_api -> CreateBackTestParams -> ema_params]: {}!!!!!'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>ema_params!!!!!: {}'.format(message))
             return False, {'message': message}
         else:
             short_period_up = abs(int(str_ema_short_period_up))
@@ -359,7 +357,7 @@ class CreateBackTestParams(object):
         if not str_ema_long_period_low:
             message = 'Error!! Not low long period of EMA'
             logger.warning(
-                '!!!!!action [trade_api -> CreateBackTestParams -> ema_params]: {}!!!!!'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>ema_params!!!!!: {}'.format(message))
             return False, {'message': message}
         else:
             long_period_low = abs(int(str_ema_long_period_low))
@@ -367,7 +365,7 @@ class CreateBackTestParams(object):
         if not str_ema_long_period_up:
             message = 'Error!! Not up long period of EMA'
             logger.warning(
-                '!!!!!action [trade_api -> CreateBackTestParams -> ema_params]: {}!!!!!'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>ema_params!!!!!: {}'.format(message))
             return False, {'message': message}
         else:
             long_period_up = abs(int(str_ema_long_period_up))
@@ -376,18 +374,13 @@ class CreateBackTestParams(object):
         if short_period_low > short_period_up:
             message = 'Error!! low short period of EMA is large more than up short period of EMA'
             logger.warning(
-                '!!!!!action [trade_api -> CreateBackTestParams -> ema_params]: {}!!!!!'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>ema_params!!!!!: {}'.format(message))
             return False, {'message': message}
         if long_period_low > long_period_up:
             message = 'Error!! low long period of EMA is large more than up long period of EMA'
             logger.warning(
-                '!!!!!action trade_api -> CreateBackTestParams -> ema_params: {}!!!!!'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>ema_params!!!!!: {}'.format(message))
             return False, {'message': message}
-
-        logger.info(
-            '$$$$$action: [trade_api -> ema params]: '
-            'short_period_low={} short_period_up={} long_period_low={} long_period_up={}$$$$$'.format(
-                short_period_low, short_period_up, long_period_low, long_period_up))
 
         ema_params = Dict2Obj(
             {'ema1': short_period_low, 'ema2': short_period_up,
@@ -401,7 +394,7 @@ class CreateBackTestParams(object):
         if not str_n_low:
             message = 'Error: Not low n of BBands'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> bb_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>bb_params!!!!!: {}'.format(message))
             return False, {'message': message}
         else:
             n_low = abs(int(str_n_low))
@@ -409,7 +402,7 @@ class CreateBackTestParams(object):
         if not str_n_up:
             message = 'Error: Not up n of BBands'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> bb_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>bb_params!!!!!: {}'.format(message))
             return False, {'message': message}
         else:
             n_up = abs(int(str_n_up))
@@ -418,7 +411,7 @@ class CreateBackTestParams(object):
         if not str_k_low:
             message = 'Error: Not low k of BBands'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> bb_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>bb_params!!!!!: {}'.format(message))
             return False, {'message': message}
         else:
             k_low = abs(float(str_k_low))
@@ -426,8 +419,8 @@ class CreateBackTestParams(object):
         if not str_k_up:
             message = 'Error: Not up k of BBands'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> bb_params: {}'.format(message))
-            return False, {'message': 'Error: Not up long period of EMA'}
+                '!!!!!action=trade_api->>CreateBackTestParams->>bb_params: {}'.format(message))
+            return False, {'message': message}
         else:
             k_up = abs(float(str_k_up))
 
@@ -435,17 +428,13 @@ class CreateBackTestParams(object):
         if n_low > n_up:
             message = 'Error: low n of BBands is large more than up n of BBands'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> bb_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>bb_params!!!!!: {}'.format(message))
             return False, {'message': message}
         if k_low > k_up:
             message = 'Error: low k of BBands is large more than up k of BBands'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> bb_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>bb_params!!!!!: {}'.format(message))
             return False, {'message': message}
-
-        logger.info(
-            '\n#####action: trade_api -> bb params#####\n'
-            'n_low: {} n_up: {} k_low :{} k_up :{}'.format(n_low, n_up, k_low, k_up))
 
         bb_params = Dict2Obj(
             {'bb1': n_low, 'bb2': n_up, 'bb3': k_low, 'bb4': k_up})
@@ -460,7 +449,7 @@ class CreateBackTestParams(object):
         if not str_rsi_period_low:
             message = 'Error: Not low period of RSI'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> rsi_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>rsi_params!!!!!: {}'.format(message))
             return False, {'message': message}
         else:
             rsi_period_low = abs(int(str_rsi_period_low))
@@ -468,7 +457,7 @@ class CreateBackTestParams(object):
         if not str_rsi_period_up:
             message = 'Error: Not up period of RSI'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> rsi_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>rsi_params!!!!!: {}'.format(message))
             return False, {'message': message}
         else:
             rsi_period_up = abs(int(str_rsi_period_up))
@@ -477,7 +466,7 @@ class CreateBackTestParams(object):
         if not str_rsi_buy_thred_low:
             message = 'Error: Not low buy thread of RSI'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> rsi_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>rsi_params!!!!!: {}'.format(message))
             return False, {'message': message}
         else:
             rsi_buy_thread_low = abs(int(str_rsi_buy_thred_low))
@@ -485,7 +474,7 @@ class CreateBackTestParams(object):
         if not str_rsi_buy_thred_up:
             message = 'Error: Not up buy thread of RSI'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> rsi_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>rsi_params!!!!!: {}'.format(message))
             return False, {'message': message}
         else:
             rsi_buy_thread_up = abs(int(str_rsi_buy_thred_up))
@@ -494,7 +483,7 @@ class CreateBackTestParams(object):
         if not str_rsi_sell_thred_low:
             message = 'Error: Not low sell thread of RSI'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> rsi_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>rsi_params!!!!!: {}'.format(message))
             return False, {'message': message}
         else:
             rsi_sell_thread_low = abs(int(str_rsi_sell_thred_low))
@@ -502,7 +491,7 @@ class CreateBackTestParams(object):
         if not str_rsi_sell_thred_up:
             message = 'Error: Not up sell thread of RSI'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> rsi_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>rsi_params!!!!!: {}'.format(message))
             return False, {'message': message}
         else:
             rsi_sell_thread_up = abs(int(str_rsi_sell_thred_up))
@@ -511,27 +500,18 @@ class CreateBackTestParams(object):
         if rsi_period_low > rsi_period_up:
             message = 'Error: low period of RSI is large more than up period of RSI'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> rsi_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>rsi_params!!!!!: {}'.format(message))
             return False, {'message': message}
         if rsi_buy_thread_low > rsi_buy_thread_up:
             message = 'Error: low buy thread of RSI is large more than up buy thread of RSI'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> rsi_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>rsi_params!!!!!: {}'.format(message))
             return False, {'message': message}
         if rsi_sell_thread_low > rsi_sell_thread_up:
             message = 'Error: low sell thread of RSI is large more than up sell thread of RSI'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> rsi_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>rsi_params!!!!!: {}'.format(message))
             return False, {'message': message}
-
-        logger.info(
-            '\n#####action: trade_api -> rsi params#####\n'
-            'rsi_period_low: {} rsi_period_up: {}'
-            'rsi_buy_thread_low :{} rsi_buy_thread_up :{}'
-            'rsi_sell_thread_low :{} rsi_sell_thread_up :{}'.format(
-                rsi_period_low, rsi_period_up,
-                rsi_buy_thread_low, rsi_buy_thread_up,
-                rsi_sell_thread_low, rsi_sell_thread_up))
 
         rsi_params = Dict2Obj(
             {'rsi1': rsi_period_low, 'rsi2': rsi_period_up,
@@ -548,7 +528,7 @@ class CreateBackTestParams(object):
         if not str_macd_fast_period_low:
             message = 'Error: Not low fast period of MACD'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> macd_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>macd_params!!!!!: {}'.format(message))
             return False, {'message': message}
         else:
             macd_fast_period_low = abs(int(str_macd_fast_period_low))
@@ -556,7 +536,7 @@ class CreateBackTestParams(object):
         if not str_macd_fast_period_up:
             message = 'Error: Not up fast period of MACD'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> macd_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>macd_params!!!!!: {}'.format(message))
             return False, {'message': message}
         else:
             macd_fast_period_up = abs(int(str_macd_fast_period_up))
@@ -565,7 +545,7 @@ class CreateBackTestParams(object):
         if not str_macd_slow_period_low:
             message = 'Error: Not low slow period of MACD'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> macd_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>macd_params!!!!!: {}'.format(message))
             return False, {'message': message}
         else:
             macd_slow_period_low = abs(int(str_macd_slow_period_low))
@@ -573,7 +553,7 @@ class CreateBackTestParams(object):
         if not str_macd_slow_period_up:
             message = 'Error: Not up slow period of MACD'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> macd_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>macd_params!!!!!: {}'.format(message))
             return False, {'message': message}
         else:
             macd_slow_period_up = abs(int(str_macd_slow_period_up))
@@ -582,7 +562,7 @@ class CreateBackTestParams(object):
         if not str_macd_signal_period_low:
             message = 'Error: Error: Not low signal period of MACD'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> macd_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>macd_params!!!!!: {}'.format(message))
             return False, {'message': message}
         else:
             macd_signal_period_low = abs(int(str_macd_signal_period_low))
@@ -590,7 +570,7 @@ class CreateBackTestParams(object):
         if not str_macd_signal_period_up:
             message = 'Error: Not up signal period of MACD'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> macd_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>macd_params!!!!!: {}'.format(message))
             return False, {'message': message}
         else:
             macd_signal_period_up = abs(int(str_macd_signal_period_up))
@@ -599,27 +579,18 @@ class CreateBackTestParams(object):
         if macd_fast_period_low > macd_fast_period_up:
             message = 'Error: low fast period of MACD is large more than up fast period of MACD'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> macd_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>macd_params!!!!!: {}'.format(message))
             return False, {'message': message}
         if macd_slow_period_low > macd_slow_period_up:
             message = 'Error: low slow period of MACD is large more than up slow period of MACD'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> macd_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>macd_params!!!!!: {}'.format(message))
             return False, {'message': message}
         if macd_signal_period_low > macd_signal_period_up:
             message = 'Error: low signal period of MACD is large more than up signal period of MACD'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> macd_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>macd_params!!!!!: {}'.format(message))
             return False, {'message': message}
-
-        logger.info(
-            '\n#####action: trade_api -> macd params#####\n'
-            'fast_period_low: {} fast_period_up: {}'
-            'slow_period_low :{} slow_period_up :{}'
-            'signal_period_low :{} signal_period_up :{}'.format(
-                macd_fast_period_low, macd_fast_period_up,
-                macd_slow_period_low, macd_slow_period_up,
-                macd_signal_period_low, macd_signal_period_up))
 
         macd_params = Dict2Obj(
             {'macd1': macd_fast_period_low, 'macd2': macd_fast_period_up,
@@ -636,7 +607,7 @@ class CreateBackTestParams(object):
         if not str_willr_period_low:
             message = 'Error: Not low period of WILLR'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> willr_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>willr_params!!!!!: {}'.format(message))
             return False, {'message': message}
         else:
             willr_period_low = abs(int(str_willr_period_low))
@@ -644,7 +615,7 @@ class CreateBackTestParams(object):
         if not str_willr_period_up:
             message = 'Error: Not up period of WILLR'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> willr_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>willr_params!!!!!: {}'.format(message))
             return False, {'message': message}
         else:
             willr_period_up = abs(int(str_willr_period_up))
@@ -653,7 +624,7 @@ class CreateBackTestParams(object):
         if not str_willr_buy_thred_low:
             message = 'Error: Not low buy thread of WILLR'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> willr_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>willr_params!!!!!: {}'.format(message))
             return False, {'message': message}
         else:
             willr_buy_thread_low = -abs(int(str_willr_buy_thred_low))
@@ -661,7 +632,7 @@ class CreateBackTestParams(object):
         if not str_willr_buy_thred_up:
             message = 'Error: Not up buy thread of WILLR'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> willr_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>willr_params!!!!!: {}'.format(message))
             return False, {'message': message}
         else:
             willr_buy_thread_up = -abs(int(str_willr_buy_thred_up))
@@ -670,7 +641,7 @@ class CreateBackTestParams(object):
         if not str_willr_sell_thred_low:
             message = 'Error: Not low sell thread of WILLR'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> willr_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>willr_params!!!!!: {}'.format(message))
             return False, {'message': message}
         else:
             willr_sell_thread_low = -abs(int(str_willr_sell_thred_low))
@@ -678,7 +649,7 @@ class CreateBackTestParams(object):
         if not str_willr_sell_thred_up:
             message = 'Error: Not up sell thread of WILLR'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> willr_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>willr_params!!!!!: {}'.format(message))
             return False, {'message': message}
         else:
             willr_sell_thread_up = -abs(int(str_willr_sell_thred_up))
@@ -687,27 +658,18 @@ class CreateBackTestParams(object):
         if willr_period_low > willr_period_up:
             message = 'Error: low period of WILLR is large more than up period of WILLR'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> willr_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>willr_params!!!!!: {}'.format(message))
             return False, {'message': message}
         if willr_buy_thread_low > willr_buy_thread_up:
             message = 'Error: low buy thread of WILLR is large more than up buy thread of WILLR'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> willr_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>willr_params!!!!!: {}'.format(message))
             return False, {'message': message}
         if willr_sell_thread_low > willr_sell_thread_up:
             message = 'Error: low sell thread of WILLR is large more than up sell thread of WILLR'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> willr_params: {}'.format(message))
+                '!!!!!action trade_api->>CreateBackTestParams->>willr_params!!!!!: {}'.format(message))
             return False, {'message': message}
-
-        logger.info(
-            '\n#####action: trade_api -> willr params#####\n'
-            'willr_period_low: {} willr_period_up: {}'
-            'willr_buy_thread_low :{} willr_buy_thread_up :{}'
-            'willr_sell_thread_low :{} willr_sell_thread_up :{}'.format(
-                willr_period_low, willr_period_up,
-                willr_buy_thread_low, willr_buy_thread_up,
-                willr_sell_thread_low, willr_sell_thread_up))
 
         willr_params = Dict2Obj(
             {'willr1': willr_period_low, 'willr2': willr_period_up,
@@ -725,7 +687,7 @@ class CreateBackTestParams(object):
         if not str_stochf_fastk_period_low:
             message = 'Error: Not low fastk period of STOCHF'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> stochf_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>stochf_params!!!!!: {}'.format(message))
             return False, {'message': message}
         else:
             stochf_fastk_period_low = abs(int(str_stochf_fastk_period_low))
@@ -733,7 +695,7 @@ class CreateBackTestParams(object):
         if not str_stochf_fastk_period_up:
             message = 'Error: Not up fastk period of STOCHF'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> stochf_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>stochf_params!!!!!: {}'.format(message))
             return False, {'message': message}
         else:
             stochf_fastk_period_up = abs(int(str_stochf_fastk_period_up))
@@ -742,7 +704,7 @@ class CreateBackTestParams(object):
         if not str_stochf_fastd_period_low:
             message = 'Error: Not low fastd period of STOCHF'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> stochf_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>stochf_params!!!!!: {}'.format(message))
             return False, {'message': message}
         else:
             stochf_fastd_period_low = abs(int(str_stochf_fastd_period_low))
@@ -750,7 +712,7 @@ class CreateBackTestParams(object):
         if not str_stochf_fastd_period_up:
             message = 'Error: Not up fastd period of STOCHF'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> stochf_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>stochf_params!!!!!: {}'.format(message))
             return False, {'message': message}
         else:
             stochf_fastd_period_up = abs(int(str_stochf_fastd_period_up))
@@ -759,7 +721,7 @@ class CreateBackTestParams(object):
         if not str_stochf_buy_thread_low:
             message = 'Error: Not low buy thread of STOCHF'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> stochf_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>stochf_params!!!!!: {}'.format(message))
             return False, {'message': message}
         else:
             stochf_buy_thread_low = abs(int(str_stochf_buy_thread_low))
@@ -767,7 +729,7 @@ class CreateBackTestParams(object):
         if not str_stochf_buy_thread_up:
             message = 'Error: Not up buy thread of STOCHF'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> stochf_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>stochf_params!!!!!: {}'.format(message))
             return False, {'message': message}
         else:
             stochf_buy_thread_up = abs(int(str_stochf_buy_thread_up))
@@ -776,7 +738,7 @@ class CreateBackTestParams(object):
         if not str_stochf_sell_thread_low:
             message = 'Error: Not low sell thread of STOCHF'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> stochf_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>stochf_params!!!!!: {}'.format(message))
             return False, {'message': message}
         else:
             stochf_sell_thread_low = abs(int(str_stochf_sell_thread_low))
@@ -784,7 +746,7 @@ class CreateBackTestParams(object):
         if not str_stochf_sell_thread_up:
             message = 'Error: Not up sell thread of STOCHF'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> stochf_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>stochf_params!!!!!: {}'.format(message))
             return False, {'message': message}
         else:
             stochf_sell_thread_up = abs(int(str_stochf_sell_thread_up))
@@ -793,34 +755,23 @@ class CreateBackTestParams(object):
         if stochf_fastk_period_low > stochf_fastk_period_up:
             message = 'Error: low fastk period of STOCHF is large more than up fastk period of STOCHF'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> stochf_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>stochf_params!!!!!: {}'.format(message))
             return False, {'message': message}
         if stochf_fastd_period_low > stochf_fastd_period_up:
             message = 'Error: low fastd period of STOCHF is large more than up fastd period of STOCHF'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> stochf_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>stochf_params!!!!!: {}'.format(message))
             return False, {'message': message}
         if stochf_buy_thread_low > stochf_buy_thread_up:
             message = 'Error: low buy thread of STOCHF is large more than up buy thread of STOCHF'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> stochf_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>stochf_params!!!!!: {}'.format(message))
             return False, {'message': message}
         if stochf_sell_thread_low > stochf_sell_thread_up:
             message = 'Error: low sell thread of STOCHF is large more than up sell thread of STOCHF'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> stochf_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>stochf_params!!!!!: {}'.format(message))
             return False, {'message': message}
-
-        logger.info(
-            '\n#####action: trade_api -> stochf params#####\n'
-            'stochf_fastk_period_low: {} stochf_fastk_period_up: {}'
-            'stochf_fastd_period_low :{} stochf_fastd_period_up :{}'
-            'stochf_buy_thread_low :{} stochf_buy_thread_up :{}'
-            'stochf_sell_thread_low :{} stochf_sell_thread_up :{}'.format(
-                stochf_fastk_period_low, stochf_fastk_period_up,
-                stochf_fastd_period_low, stochf_fastd_period_up,
-                stochf_buy_thread_low, stochf_buy_thread_up,
-                stochf_sell_thread_low, stochf_sell_thread_up))
 
         stochf_params = Dict2Obj(
             {'stochf1': stochf_fastk_period_low, 'stochf2': stochf_fastk_period_up,
@@ -840,7 +791,7 @@ class CreateBackTestParams(object):
         if not str_stoch_fastk_period_low:
             message = 'Error: Not low fastk period of STOCH'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> stoch_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>stoch_params!!!!!: {}'.format(message))
             return False, {'message': message}
         else:
             stoch_fastk_period_low = abs(int(str_stoch_fastk_period_low))
@@ -848,7 +799,7 @@ class CreateBackTestParams(object):
         if not str_stoch_fastk_period_up:
             message = 'Error: Not up fastk period of STOCH'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> stoch_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>stoch_params!!!!!: {}'.format(message))
             return False, {'message': message}
         else:
             stoch_fastk_period_up = abs(int(str_stoch_fastk_period_up))
@@ -857,7 +808,7 @@ class CreateBackTestParams(object):
         if not str_stoch_slowk_period_low:
             message = 'Error: Not low slowk period of STOCH'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> stoch_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>stoch_params!!!!!: {}'.format(message))
             return False, {'message': message}
         else:
             stoch_slowk_period_low = abs(int(str_stoch_slowk_period_low))
@@ -865,7 +816,7 @@ class CreateBackTestParams(object):
         if not str_stoch_slowk_period_up:
             message = 'Error: Not up slowk period of STOCH'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> stoch_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>stoch_params!!!!!: {}'.format(message))
             return False, {'message': message}
         else:
             stoch_slowk_period_up = abs(int(str_stoch_slowk_period_up))
@@ -874,7 +825,7 @@ class CreateBackTestParams(object):
         if not str_stoch_slowd_period_low:
             message = 'Error: Not low slowd period of STOCH'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> stoch_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>stoch_params!!!!!: {}'.format(message))
             return False, {'message': message}
         else:
             stoch_slowd_period_low = abs(int(str_stoch_slowd_period_low))
@@ -882,7 +833,7 @@ class CreateBackTestParams(object):
         if not str_stoch_slowd_period_up:
             message = 'Error: Not up slowd period of STOCH'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> stoch_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>stoch_params!!!!!: {}'.format(message))
             return False, {'message': message}
         else:
             stoch_slowd_period_up = abs(int(str_stoch_slowd_period_up))
@@ -891,7 +842,7 @@ class CreateBackTestParams(object):
         if not str_stoch_buy_thread_low:
             message = 'Error: Not low buy thread of STOCH'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> stoch_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>stoch_params!!!!!: {}'.format(message))
             return False, {'message': message}
         else:
             stoch_buy_thread_low = abs(int(str_stoch_buy_thread_low))
@@ -899,7 +850,7 @@ class CreateBackTestParams(object):
         if not str_stoch_buy_thread_up:
             message = 'Error: Not up buy thread of STOCH'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> stoch_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>stoch_params!!!!!: {}'.format(message))
             return False, {'message': message}
         else:
             stoch_buy_thread_up = abs(int(str_stoch_buy_thread_up))
@@ -908,7 +859,7 @@ class CreateBackTestParams(object):
         if not str_stoch_sell_thread_low:
             message = 'Error: Not low sell thread of STOCH'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> stoch_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>stoch_params!!!!!: {}'.format(message))
             return False, {'message': message}
         else:
             stoch_sell_thread_low = abs(int(str_stoch_sell_thread_low))
@@ -916,7 +867,7 @@ class CreateBackTestParams(object):
         if not str_stoch_sell_thread_up:
             message = 'Error: Not up sell thread of STOCH'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> stoch_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>stoch_params!!!!!: {}'.format(message))
             return False, {'message': message}
         else:
             stoch_sell_thread_up = abs(int(str_stoch_sell_thread_up))
@@ -925,41 +876,28 @@ class CreateBackTestParams(object):
         if stoch_fastk_period_low > stoch_fastk_period_up:
             message = 'Error: low fastk period of STOCH is large more than up fastk period of STOCH'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> stoch_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>stoch_params!!!!!: {}'.format(message))
             return False, {'message': message}
         if stoch_slowk_period_low > stoch_slowk_period_up:
             message = 'Error: low slowk period of STOCH is large more than up slowk period of STOCH'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> stoch_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>stoch_params!!!!!: {}'.format(message))
             return False, {'message': message}
         if stoch_slowd_period_low > stoch_slowd_period_up:
             message = 'Error: low slowd period of STOCH is large more than up slowd period of STOCH'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> stoch_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>stoch_params!!!!!: {}'.format(message))
             return False, {'message': message}
         if stoch_buy_thread_low > stoch_buy_thread_up:
             message = 'Error: low buy thread of STOCH is large more than up buy thread of STOCH'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> stoch_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>stoch_params!!!!!: {}'.format(message))
             return False, {'message': message}
         if stoch_sell_thread_low > stoch_sell_thread_up:
             message = 'Error: low sell thread of STOCH is large more than up sell thread of STOCH'
             logger.warning(
-                'action trade_api -> CreateBackTestParams -> stoch_params: {}'.format(message))
+                '!!!!!action=trade_api->>CreateBackTestParams->>stoch_params!!!!!: {}'.format(message))
             return False, {'message': message}
-
-        logger.info(
-            '#####action: trade_api -> stoch params#####\n'
-            'stoch_fastk_period_low: {} stoch_fastk_period_up: {}'
-            'stoch_slowk_period_low: {} stoch_slowk_period_up: {}'
-            'stoch_slowd_period_low :{} stoch_slowd_period_up :{}'
-            'stoch_buy_thread_low :{} stoch_buy_thread_up :{}'
-            'stoch_sell_thread_low :{} stoch_sell_thread_up :{}'.format(
-                stoch_fastk_period_low, stoch_fastk_period_up,
-                stoch_slowk_period_low, stoch_slowk_period_up,
-                stoch_slowd_period_low, stoch_slowd_period_up,
-                stoch_buy_thread_low, stoch_buy_thread_up,
-                stoch_sell_thread_low, stoch_sell_thread_up))
 
         stoch_params = Dict2Obj(
             {'stoch1': stoch_fastk_period_low, 'stoch2': stoch_fastk_period_up,

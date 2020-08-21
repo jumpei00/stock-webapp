@@ -943,7 +943,7 @@ class Macd {
                     '[Results] Performace: <span id="MacdPerformance"></span><br>' +
                     'Fast Period<span id="MacdFast"></span>' +
                     'Slow Period<span id="MacdSlow"></span>' +
-                    'Signal Period<span id="MacdSignal"></span>' +
+                    'Signal Period<span id="MacdSignalPeriod"></span>' +
                     '</div>'
                 )
                 $('#MacdEvents').append(
@@ -953,7 +953,7 @@ class Macd {
             $('#MacdPerformance').text(trade_results.backtest.macd.performance)
             $('#MacdFast').text(trade_results.backtest.macd.fast_period)
             $('#MacdSlow').text(trade_results.backtest.macd.slow_period)
-            $('#MacdSignal').text(trade_results.backtest.macd.signal_period)
+            $('#MacdSignalPeriod').text(trade_results.backtest.macd.signal_period)
         }
 
         else if (trade_results.backtest.enable == false) {
@@ -1504,7 +1504,7 @@ class Stoch {
             $('#StochPerformance').text(trade_results.backtest.stoch.performance)
             $('#StochFastk').text(trade_results.backtest.stoch.fastk_period)
             $('#StochSlowk').text(trade_results.backtest.stoch.slowk_period)
-            $('#StochSlowd').text(trade_results.backtest.stoch.slowd_perod)
+            $('#StochSlowd').text(trade_results.backtest.stoch.slowd_period)
             $('#StochBuyThread').text(trade_results.backtest.stoch.buy_thread)
             $('#StochSellThread').text(trade_results.backtest.stoch.sell_thread)
         }

@@ -220,9 +220,10 @@ class Ema {
         if (trade_results.backtest.enable == true) {
             if ($('#EmaParams').children('div').length == 2) {
                 $('#EmaParams').prepend(
-                    '<div id="EmaResults">[Results] Performace: <span id="EmaPerformance"></span><br>' +
-                    'Short: <span id="EmaShort"></span>' +
-                    'Long: <span id="EmaLong"></span>' +
+                    '<div id="EmaResults" class="alert alert-danger p-1 m-1" role="alert">' +
+                    '[Results] Performace: <span id="EmaPerformance"></span><br>' +
+                    '<span class="alert alert-dark p-1 m-1" role="alert">Short: <span id="EmaShort"></span></span>' +
+                    '<span class="alert alert-dark p-1 m-1" role="alert">Long: <span id="EmaLong"></span></span>' +
                     '</div>'
                 )
                 $('#EmaEvents').append(
@@ -240,7 +241,22 @@ class Ema {
     }
 
     drawSignal() {
-        $('#EmaSignal').text(trade_results.today.ema_trade)
+        var today_signal = trade_results.today.ema_trade
+        if (today_signal == '') {
+            $('#EmaSignal').text(today_signal)
+        }
+        else if (today_signal == 'NO_TRADE') {
+            $('#EmaSignal').text(today_signal)
+            $('#EmaSignal').addClass('text-success')
+        }
+        else if (today_signal == 'BUY') {
+            $('#EmaSignal').text(today_signal)
+            $('#EmaSignal').addClass('text-danger')
+        }
+        else if (today_signal == 'SELL') {
+            $('#EmaSignal').text(today_signal)
+            $('#EmaSignal').addClass('text-primary')
+        }
     }
 }
 
@@ -380,9 +396,10 @@ class BBands {
         if (trade_results.backtest.enable == true) {
             if ($('#BBandsParams').children('div').length == 2) {
                 $('#BBandsParams').prepend(
-                    '<div id="BBandsResults">[Results] Performace: <span id="BBandsPerformance"></span><br>' +
-                    'N: <span id="BBandsN"></span>' +
-                    'K: <span id="BBandsK"></span>' +
+                    '<div id="BBandsResults" class="alert alert-danger p-1 m-1" role="alert">' +
+                    '[Results] Performace: <span id="BBandsPerformance"></span><br>' +
+                    '<span class="alert alert-dark p-1 m-1" role="alert">N: <span id="BBandsN"></span></span>' +
+                    '<span class="alert alert-dark p-1 m-1" role="alert">K: <span id="BBandsK"></span></span>' +
                     '</div>'
                 )
                 $('#BBandsEvents').append(
@@ -401,7 +418,22 @@ class BBands {
     }
 
     drawSignal() {
-        $('#BBandsSignal').text(trade_results.today.bb_trade)
+        var today_signal = trade_results.today.bb_trade
+        if (today_signal == '') {
+            $('#BBandsSignal').text(today_signal)
+        }
+        else if (today_signal == 'NO_TRADE') {
+            $('#BBandsSignal').text(today_signal)
+            $('#BBandsSignal').addClass('text-success')
+        }
+        else if (today_signal == 'BUY') {
+            $('#BBandsSignal').text(today_signal)
+            $('#BBandsSignal').addClass('text-danger')
+        }
+        else if (today_signal == 'SELL') {
+            $('#BBandsSignal').text(today_signal)
+            $('#BBandsSignal').addClass('text-primary')
+        }
     }
 }
 
@@ -553,7 +585,7 @@ class Ichimoku {
         if (trade_results.backtest.enable == true) {
             if ($('#IchimokuParams').children('div').length == 0) {
                 $('#IchimokuParams').append(
-                    '<div id="IchimokuResults">' +
+                    '<div id="IchimokuResults" class="alert alert-danger p-1 m-1" role="alert">' +
                     '[Results] Performace: <span id="ichimokuPerformance"></span>' +
                     '</div>'
                 )
@@ -571,7 +603,22 @@ class Ichimoku {
     }
 
     drawSignal() {
-        $('#IchimokuSignal').text(trade_results.today.ichimoku_trade)
+        var today_signal = trade_results.today.ichimoku_trade
+        if (today_signal == '') {
+            $('#IchimokuSignal').text(today_signal)
+        }
+        else if (today_signal == 'NO_TRADE') {
+            $('#IchimokuSignal').text(today_signal)
+            $('#IchimokuSignal').addClass('text-success')
+        }
+        else if (today_signal == 'BUY') {
+            $('#IchimokuSignal').text(today_signal)
+            $('#IchimokuSignal').addClass('text-danger')
+        }
+        else if (today_signal == 'SELL') {
+            $('#IchimokuSignal').text(today_signal)
+            $('#IchimokuSignal').addClass('text-primary')
+        }
     }
 }
 
@@ -750,11 +797,11 @@ class Rsi {
         if (trade_results.backtest.enable == true) {
             if ($('#RsiParams').children('div').length == 3) {
                 $('#RsiParams').prepend(
-                    '<div id="RsiResults">' +
+                    '<div id="RsiResults" class="alert alert-danger p-1 m-1" role="alert">' +
                     '[Results] Performace: <span id="RsiPerfomance"></span><br>' +
-                    'Period: <span id="RsiPeriod"></span>' +
-                    'Buy Thread: <span id="RsiBuyThread"></span>' +
-                    'Sell Thread: <span id="RsiSellThread"></span>' +
+                    '<span class="alert alert-dark p-1 m-1" role="alert">Period: <span id="RsiPeriod"></span></span>' +
+                    '<span class="alert alert-dark p-1 m-1" role="alert">BuyThread: <span id="RsiBuyThread"></span></span>' +
+                    '<span class="alert alert-dark p-1 m-1" role="alert">SellThread: <span id="RsiSellThread"></span></span>' +
                     '</div>'
                 )
                 $('#RsiEvents').append(
@@ -774,7 +821,22 @@ class Rsi {
     }
 
     drawSignal() {
-        $('#RsiSignal').text(trade_results.today.rsi_trade)
+        var today_signal = trade_results.today.rsi_trade
+        if (today_signal == '') {
+            $('#RsiSignal').text(today_signal)
+        }
+        else if (today_signal == 'NO_TRADE') {
+            $('#RsiSignal').text(today_signal)
+            $('#RsiSignal').addClass('text-success')
+        }
+        else if (today_signal == 'BUY') {
+            $('#RsiSignal').text(today_signal)
+            $('#RsiSignal').addClass('text-danger')
+        }
+        else if (today_signal == 'SELL') {
+            $('#RsiSignal').text(today_signal)
+            $('#RsiSignal').addClass('text-primary')
+        }
     }
 }
 
@@ -939,11 +1001,11 @@ class Macd {
         if (trade_results.backtest.enable == true) {
             if ($('#MacdParams').children('div').length == 3) {
                 $('#MacdParams').prepend(
-                    '<div id="MacdResults">' +
+                    '<div id="MacdResults" class="alert alert-danger p-1 m-1" role="alert">' +
                     '[Results] Performace: <span id="MacdPerformance"></span><br>' +
-                    'Fast Period<span id="MacdFast"></span>' +
-                    'Slow Period<span id="MacdSlow"></span>' +
-                    'Signal Period<span id="MacdSignalPeriod"></span>' +
+                    '<span class="alert alert-dark p-1 m-1" role="alert">FastPeriod: <span id="MacdFast"></span></span>' +
+                    '<span class="alert alert-dark p-1 m-1" role="alert">SlowPeriod: <span id="MacdSlow"></span></span>' +
+                    '<span class="alert alert-dark p-1 m-1" role="alert">SignalPeriod: <span id="MacdSignalPeriod"></span></span>' +
                     '</div>'
                 )
                 $('#MacdEvents').append(
@@ -963,7 +1025,22 @@ class Macd {
     }
 
     drawSignal() {
-        $('#MacdSignal').text(trade_results.today.macd_trade)
+        var today_signal = trade_results.today.macd_trade
+        if (today_signal == '') {
+            $('#MacdSignal').text(today_signal)
+        }
+        else if (today_signal == 'NO_TRADE') {
+            $('#MacdSignal').text(today_signal)
+            $('#MacdSignal').addClass('text-success')
+        }
+        else if (today_signal == 'BUY') {
+            $('#MacdSignal').text(today_signal)
+            $('#MacdSignal').addClass('text-danger')
+        }
+        else if (today_signal == 'SELL') {
+            $('#MacdSignal').text(today_signal)
+            $('#MacdSignal').addClass('text-primary')
+        }
     }
 }
 
@@ -1106,11 +1183,11 @@ class Willr {
         if (trade_results.backtest.enable == true) {
             if ($('#WillrParams').children('div').length == 3) {
                 $('#WillrParams').prepend(
-                    '<div id="WillrResults">' +
+                    '<div id="WillrResults" class="alert alert-danger p-1 m-1" role="alert">' +
                     '[Results] Performace: <span id="WillrPerformance"></span><br>' +
-                    'Period<span id="WillrPeriod"></span>' +
-                    'Buy Thread<span id="WillrBuyThread"></span>' +
-                    'Sell Thread<span id="WillrSellThread"></span>' +
+                    '<span class="alert alert-dark p-1 m-1" role="alert">Period: <span id="WillrPeriod"></span></span>' +
+                    '<span class="alert alert-dark p-1 m-1" role="alert">BuyThread: <span id="WillrBuyThread"></span></span>' +
+                    '<span class="alert alert-dark p-1 m-1" role="alert">SellThread: <span id="WillrSellThread"></span></span>' +
                     '</div>'
                 )
                 $('#WillrEvents').append(
@@ -1130,7 +1207,22 @@ class Willr {
     }
 
     drawSignal() {
-        $('#WillrSignal').text(trade_results.today.willr_trade)
+        var today_signal = trade_results.today.willr_trade
+        if (today_signal == '') {
+            $('#WillrSignal').text(today_signal)
+        }
+        else if (today_signal == 'NO_TRADE') {
+            $('#WillrSignal').text(today_signal)
+            $('#WillrSignal').addClass('text-success')
+        }
+        else if (today_signal == 'BUY') {
+            $('#WillrSignal').text(today_signal)
+            $('#WillrSignal').addClass('text-danger')
+        }
+        else if (today_signal == 'SELL') {
+            $('#WillrSignal').text(today_signal)
+            $('#WillrSignal').addClass('text-primary')
+        }
     }
 }
 
@@ -1291,14 +1383,14 @@ class Stochf {
 
     drawParams() {
         if (trade_results.backtest.enable == true) {
-            if ($('#StochfParams').children('div').length == 4) {
+            if ($('#StochfParams').children('div').length == 1) {
                 $('#StochfParams').prepend(
-                    '<div id="StochfResults">' +
+                    '<div id="StochfResults" class="alert alert-danger p-1 m-1" role="alert">' +
                     '[Results] Performace: <span id="StochfPerformance"></span><br>' +
-                    'Fastk Period<span id="StochfFastk"></span>' +
-                    'Fastd Period<span id="StochfFastd"></span>' +
-                    'Buy Thread<span id="StochfBuyThread"></span>' +
-                    'Sell Thread<span id="StochfSellThread"></span>' +
+                    '<span class="alert alert-dark p-1 m-1" role="alert">FastkPeriod: <span id="StochfFastk"></span></span>' +
+                    '<span class="alert alert-dark p-1 m-1" role="alert">FastdPeriod: <span id="StochfFastd"></span></span>' +
+                    '<span class="alert alert-dark p-1 m-1" role="alert">BuyThread: <span id="StochfBuyThread"></span></span>' +
+                    '<span class="alert alert-dark p-1 m-1" role="alert">SellThread: <span id="StochfSellThread"></span></span>' +
                     '</div>'
                 )
                 $('#StochfEvents').append(
@@ -1319,7 +1411,22 @@ class Stochf {
     }
 
     drawSignal() {
-        $('#StochfSignal').text(trade_results.today.stochf_trade)
+        var today_signal = trade_results.today.stochf_trade
+        if (today_signal == '') {
+            $('#StochfSignal').text(today_signal)
+        }
+        else if (today_signal == 'NO_TRADE') {
+            $('#StochfSignal').text(today_signal)
+            $('#StochfSignal').addClass('text-success')
+        }
+        else if (today_signal == 'BUY') {
+            $('#StochfSignal').text(today_signal)
+            $('#StochfSignal').addClass('text-danger')
+        }
+        else if (today_signal == 'SELL') {
+            $('#StochfSignal').text(today_signal)
+            $('#StochfSignal').addClass('text-primary')
+        }
     }
 }
 
@@ -1486,15 +1593,19 @@ class Stoch {
 
     drawParams() {
         if (trade_results.backtest.enable == true) {
-            if ($('#StochParams').children('div').length == 5) {
+            if ($('#StochParams').children('div').length == 1) {
                 $('#StochParams').prepend(
-                    '<div id="StochResults">' +
+                    '<div id="StochResults" class="alert alert-danger p-1 m-1" role="alert">' +
                     '[Results] Performace: <span id="StochPerformance"></span><br>' +
-                    'Fastk Period<span id="StochFastk"></span>' +
-                    'Slowk Period<span id="StochSlowk"></span>' +
-                    'Slowd Period<span id="StochSlowd"></span>' +
-                    'Buy Thread<span id="StochBuyThread"></span>' +
-                    'Sell Thread<span id="StochSellThread"></span>' +
+                    '<div class="mb-1">' +
+                    '<span class="alert alert-dark p-1 m-1" role="alert">FastkPeriod: <span id="StochFastk"></span></span>' +
+                    '<span class="alert alert-dark p-1 m-1" role="alert">SlowkPeriod: <span id="StochSlowk"></span></span>' +
+                    '<span class="alert alert-dark p-1 m-1" role="alert">SlowdPeriod: <span id="StochSlowd"></span></span>' +
+                    '</div>' +
+                    '<div class="mt-2">' +
+                    '<span class="alert alert-dark p-1 m-1" role="alert">BuyThread: <span id="StochBuyThread"></span></span>' +
+                    '<span class="alert alert-dark p-1 m-1" role="alert">SellThread: <span id="StochSellThread"></span></span>' +
+                    '</div>' +
                     '</div>'
                 )
                 $('#StochEvents').append(
@@ -1516,6 +1627,21 @@ class Stoch {
     }
 
     drawSignal() {
-        $('#StochSignal').text(trade_results.today.stoch_trade)
+        var today_signal = trade_results.today.stoch_trade
+        if (today_signal == '') {
+            $('#StochSignal').text(today_signal)
+        }
+        else if (today_signal == 'NO_TRADE') {
+            $('#StochSignal').text(today_signal)
+            $('#StochSignal').addClass('text-success')
+        }
+        else if (today_signal == 'BUY') {
+            $('#StochSignal').text(today_signal)
+            $('#StochSignal').addClass('text-danger')
+        }
+        else if (today_signal == 'SELL') {
+            $('#StochSignal').text(today_signal)
+            $('#StochSignal').addClass('text-primary')
+        }
     }
 }

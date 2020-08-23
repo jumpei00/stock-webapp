@@ -3,7 +3,7 @@
 
     <head>
         <meta charset="UTF-8">
-        <title>Stock Trading Chart</title>
+        <title>StockTrading</title>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
             integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
@@ -14,254 +14,301 @@
         <script type="text/javascript" src="{{ url_for('static', filename='js/main.js') }}"></script>
     </head>
 
-    <body>
-        <h3 class="alert alert-info" role="alert">Stock Technical analysis Site</h3>
-        <div class="tech">
-            <div>
-                StockCode<input id="inputCode" type="text" value="1570" style="width: 40px;">
-                Duration<input id="inputDuration" type="text" value="365" style="width: 40px;">
-                <button id="inputGet">GET</button>
-            </div>
-            <div>
-                SMA <input id="inputSma" type="checkbox">
-                Period<input id="inputSmaPeriod1" type="text" value="7" style="width: 40px;">
-                <input id="inputSmaPeriod2" type="text" value="14" style="width: 40px;">
-                <input id="inputSmaPeriod3" type="text" value="50" style="width: 40px;">
-            </div>
-            <div>
-                EMA <input id="inputEma" type="checkbox">
-                Period<input id="inputEmaPeriod1" type="text" value="7" style="width: 40px;">
-                <input id="inputEmaPeriod2" type="text" value="14" style="width: 40px;">
-                <input id="inputEmaPeriod3" type="text" value="50" style="width: 40px;">
-            </div>
-            <div>
-                BBands <input id="inputBBands" type="checkbox">
-                N <input id="inputBBandsN" type="text" value="20" style="width: 40px;">
-                K <input id="inputBBandsK" type="text" value="2" style="width: 40px;">
-            </div>
-            <div>
-                Ichimoku <input id="inputIchimoku" type="checkbox">
-            </div>
-            <div>
-                Volume <input id="inputVolume" type="checkbox">
-            </div>
-            <div>
-                RSI <input id="inputRsi" type="checkbox">
-                Period <input id="inputRsiPeriod" type="text" value="14" style="width: 40px;">
-            </div>
-            <div>
-                MACD <input id="inputMacd" type="checkbox">
-                Period<input id="inputMacdPeriod1" type="text" value="12" style="width: 40px;">
-                <input id="inputMacdPeriod2" type="text" value="26" style="width: 40px;">
-                <input id="inputMacdPeriod3" type="text" value="9" style="width: 40px;">
-            </div>
-            <div>
-                Williams%R <input id="inputWillr" type="checkbox">
-                Period <input id="inputWillrPeriod" type="text" value="14" style="width: 40px;">
-            </div>
-            <div>
-                Fast Stochastic <input id="inputStochf" type="checkbox">
-                Period<input id="inputStochfPeriod1" type="text" value="9" style="width: 40px;">
-                <input id="inputStochfPeriod2" type="text" value="3" style="width: 40px;">
-            </div>
-            <div>
-                Slow Stochastic <input id="inputStoch" type="checkbox">
-                Period<input id="inputStochPeriod1" type="text" value="9" style="width: 40px;">
-                <input id="inputStochPeriod2" type="text" value="3" style="width: 40px;">
-                <input id="inputStochPeriod3" type="text" value="3" style="width: 40px;">
-            </div>
-        </div>
-        <div class="tech">
-            <div>
-                BackTest <button id="backtestGo">GO</button>
-                Stock Code: <span id="BackTestStockCode">No Test</span>
-                Latest Test Date: <span id="BackTestDate">No Date</span>
-            </div>
-            <div class="indicator">
-                <div>
-                    EMA 
-                    Events: <span id="EmaEvents"></span>
-                    Signal: <span id="EmaSignal"></span> 
-                    NowProfit: <span id="EmaNowProfit"></span>
-                    <div id="EmaParams">
-                        <div>
-                            Short Period
-                            Low <input id="inputEMAShortPeriod1" type="text" value="2" style="width: 40px;"> ~
-                            High <input id="inputEMAShortPeriod2" type="text" value="15" style="width: 40px;">
+    <body class="text-body">
+        <h3 class="alert alert-info" role="alert">Technical analysis Tools...</h3>
+
+        <div class="container-fulid">
+            <div class="row justify-content-start">
+                <div class="col-md-auto ml-4 mt-1">
+                    <span class="font-weight-bold">StockCode </span>
+                    <input id="inputCode" type="text" value="1570" style="width: 60px;">
+                    <span class="font-weight-bold">Duration </span>
+                    <input id="inputDuration" type="text" value="365" style="width: 40px;">
+                    <button id="inputGet">GET</button>
+                </div>
+                <div class="w-100"></div>
+                <div class="col-md-auto pr-0">
+                    <div class="alert alert-primary p-1 m-2 ml-3 text-body" role="alert">
+                        <span class="font-weight-bold">SMA</span> <input id="inputSma" type="checkbox">
+                        Period <input id="inputSmaPeriod1" type="text" value="7" style="width: 40px;">
+                        <input id="inputSmaPeriod2" type="text" value="14" style="width: 40px;">
+                        <input id="inputSmaPeriod3" type="text" value="50" style="width: 40px;">
+                    </div>
+                    <div class="alert alert-primary p-1 m-2 ml-3 text-body" role="alert">
+                        <span class="font-weight-bold">EMA</span> <input id="inputEma" type="checkbox">
+                        Period <input id="inputEmaPeriod1" type="text" value="7" style="width: 40px;">
+                        <input id="inputEmaPeriod2" type="text" value="14" style="width: 40px;">
+                        <input id="inputEmaPeriod3" type="text" value="50" style="width: 40px;">
+                    </div>
+                </div>
+                <div class="col-md-auto px-0">
+                    <div class="alert alert-primary p-1 m-2 text-body" role="alert">
+                        <span class="font-weight-bold">BBands</span> <input id="inputBBands" type="checkbox">
+                        N <input id="inputBBandsN" type="text" value="20" style="width: 40px;">
+                        K <input id="inputBBandsK" type="text" value="2" style="width: 40px;">
+                    </div>
+                    <div class="alert alert-primary p-1 m-2 text-body" role="alert">
+                        <span class="font-weight-bold">Ichimoku</span> <input id="inputIchimoku" type="checkbox">
+                    </div>
+                </div>
+                <div class="col-md-auto px-0">
+                    <div class="alert alert-primary p-1 m-2 text-body" role="alert">
+                        <span class="font-weight-bold">Volume</span> <input id="inputVolume" type="checkbox">
+                    </div>
+                    <div class="alert alert-primary p-1 m-2 text-body" role="alert">
+                        <span class="font-weight-bold">RSI</span> <input id="inputRsi" type="checkbox">
+                        Period <input id="inputRsiPeriod" type="text" value="14" style="width: 40px;">
+                    </div>
+                </div>
+                <div class="col-md-auto px-0">
+                    <div class="alert alert-primary p-1 m-2 text-body" role="alert">
+                        <span class="font-weight-bold">MACD</span> <input id="inputMacd" type="checkbox">
+                        Period <input id="inputMacdPeriod1" type="text" value="12" style="width: 40px;">
+                        <input id="inputMacdPeriod2" type="text" value="26" style="width: 40px;">
+                        <input id="inputMacdPeriod3" type="text" value="9" style="width: 40px;">
+                    </div>
+                    <div class="alert alert-primary p-1 m-2 text-body" role="alert">
+                        <span class="font-weight-bold">Williams%R</span> <input id="inputWillr" type="checkbox">
+                        Period <input id="inputWillrPeriod" type="text" value="14" style="width: 40px;">
+                    </div>
+                </div>
+                <div class="col-md-auto px-0">
+                    <div class="alert alert-primary p-1 m-2 text-body" role="alert">
+                        <span class="font-weight-bold">FastStochastics</span> <input id="inputStochf" type="checkbox">
+                        Period <input id="inputStochfPeriod1" type="text" value="9" style="width: 40px;">
+                        <input id="inputStochfPeriod2" type="text" value="3" style="width: 40px;">
+                    </div>
+                    <div class="alert alert-primary p-1 m-2 text-body" role="alert">
+                        <span class="font-weight-bold">SlowStochastics</span> <input id="inputStoch" type="checkbox">
+                        Period <input id="inputStochPeriod1" type="text" value="9" style="width: 40px;">
+                        <input id="inputStochPeriod2" type="text" value="3" style="width: 40px;">
+                        <input id="inputStochPeriod3" type="text" value="3" style="width: 40px;">
+                    </div>
+                </div>
+                <div class="w-100 m-1"></div>
+                <div class="col-md-auto ml-4 mt-1">
+                    <span class="font-weight-bold">BackTest</span> <button id="backtestGo">GO</button>
+                    <span class="font-weight-bold">Stock Code: </span><span id="BackTestStockCode">No Test</span>
+                    <span class="font-weight-bold">Latest Test Date: </span><span id="BackTestDate">No Date</span>
+                </div>
+                <div class="w-100"></div>
+                <div class="col-md-auto pr-0">
+                    <div class="alert alert-success p-1 m-2 ml-3 text-body" role="alert">
+                        <span class="font-weight-bold">EMA</span>
+                        Events: <span id="EmaEvents"></span>
+                        Signal: <span id="EmaSignal"></span>
+                        NowProfit: <span id="EmaNowProfit"></span>
+                        <div id="EmaParams">
+                            <div>
+                                Short Period
+                                Low <input id="inputEMAShortPeriod1" type="text" value="2" style="width: 40px;"> ~
+                                High <input id="inputEMAShortPeriod2" type="text" value="15" style="width: 40px;">
+                            </div>
+                            <div class="mt-1">
+                                Long Period
+                                Low<input id="inputEMALongPeriod1" type="text" value="10" style="width: 40px;"> ~
+                                High <input id="inputEMALongPeriod2" type="text" value="30" style="width: 40px;">
+                            </div>
                         </div>
-                        <div>
-                            Long Period
-                            Low<input id="inputEMALongPeriod1" type="text" value="10" style="width: 40px;"> ~
-                            High <input id="inputEMALongPeriod2" type="text" value="30" style="width: 40px;">
+                    </div>
+                    <div class="alert alert-success p-1 m-2 ml-3 text-body" role="alert">
+                        <span class="font-weight-bold">BBands</span>
+                        Events: <span id="BBandsEvents"></span>
+                        Signal: <span id="BBandsSignal"></span>
+                        NowProfit: <span id="BBandsNowProfit"></span>
+                        <div id="BBandsParams">
+                            <div>
+                                N
+                                Low <input id="inputBBandsNPeriod1" type="text" value="15" style="width: 40px;"> ~
+                                High <input id="inputBBandsNPeriod2" type="text" value="25" style="width: 40px;">
+                            </div>
+                            <div class="mt-1">
+                                K
+                                Low<input id="inputBBandsKPeriod1" type="text" value="1.5" style="width: 40px;"> ~
+                                High <input id="inputBBandsKPeriod2" type="text" value="2.5" style="width: 40px;">
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div>
-                    BBands 
-                    Events: <span id="BBandsEvents"></span>
-                    Signal: <span id="BBandsSignal"></span> 
-                    NowProfit: <span id="BBandsNowProfit"></span>
-                    <div id="BBandsParams">
-                        <div>
-                            N
-                            Low <input id="inputBBandsNPeriod1" type="text" value="15" style="width: 40px;"> ~
-                            High <input id="inputBBandsNPeriod2" type="text" value="25" style="width: 40px;">
-                        </div>
-                        <div>
-                            K
-                            Low<input id="inputBBandsKPeriod1" type="text" value="1.5" style="width: 40px;"> ~
-                            High <input id="inputBBandsKPeriod2" type="text" value="2.5" style="width: 40px;">
+                <div class="col-md-auto px-0">
+                    <div id="IchimokuParams" class="alert alert-success p-1 m-2 text-body" role="alert">
+                        <span class="font-weight-bold">Ichimoku</span>
+                        Events: <span id="IchimokuEvents"></span>
+                        Signal: <span id="IchimokuSignal"></span>
+                        NowProfit: <span id="IchimokuNowProfit"></span>
+                    </div>
+                    <div class="alert alert-success p-1 m-2 text-body" role="alert">
+                        <span class="font-weight-bold">RSI</span>
+                        Events: <span id="RsiEvents"></span>
+                        Signal: <span id="RsiSignal"></span>
+                        NowProfit: <span id="RsiNowProfit"></span>
+                        <div id="RsiParams">
+                            <div>
+                                Period
+                                Low <input id="inputRsiPeriod1" type="text" value=5 style="width: 40px;"> ~
+                                High <input id="inputRsiPeriod2" type="text" value="20" style="width: 40px;">
+                            </div>
+                            <div class="mt-1">
+                                Buy Thread
+                                Low<input id="inputRsiBuyThread1" type="text" value="25" style="width: 40px;"> ~
+                                High <input id="inputRsiBuyThread2" type="text" value="35" style="width: 40px;">
+                            </div>
+                            <div class="mt-1">
+                                Sell Thread
+                                Low<input id="inputRsiSellThread1" type="text" value="75" style="width: 40px;"> ~
+                                High <input id="inputRsiSellThread2" type="text" value="85" style="width: 40px;">
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div id="IchimokuParams">
-                    Ichimoku 
-                    Events: <span id="IchimokuEvents"></span>
-                    Signal: <span id="IchimokuSignal"></span> 
-                    NowProfit: <span id="IchimokuNowProfit"></span>
+                <div class="col-md-auto px-0">
+                    <div class="alert alert-success p-1 m-2 text-body" role="alert">
+                        <span class="font-weight-bold">MACD</span>
+                        Events: <span id="MacdEvents"></span>
+                        Signal: <span id="MacdSignal"></span>
+                        NowProfit: <span id="MacdNowProfit"></span>
+                        <div id="MacdParams">
+                            <div>
+                                Fast Period
+                                Low <input id="inputMacdFastPeriod1" type="text" value="5" style="width: 40px;"> ~
+                                High <input id="inputMacdFastPeriod2" type="text" value="15" style="width: 40px;">
+                            </div>
+                            <div class="mt-1">
+                                Slow Period
+                                Low<input id="inputMacdSlowPeriod1" type="text" value="20" style="width: 40px;"> ~
+                                High <input id="inputMacdSlowPeriod2" type="text" value="30" style="width: 40px;">
+                            </div>
+                            <div class="mt-1">
+                                Signal Period
+                                Low<input id="inputMacdSignalPeriod1" type="text" value="5" style="width: 40px;"> ~
+                                High <input id="inputMacdSignalPeriod2" type="text" value="15" style="width: 40px;">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="alert alert-success p-1 m-2 text-body" role="alert">
+                        <span class="font-weight-bold">Williams%R</span>
+                        Events: <span id="WillrEvents"></span>
+                        Signal: <span id="WillrSignal"></span>
+                        NowProfit: <span id="WillrNowProfit"></span>
+                        <div id="WillrParams">
+                            <div>
+                                Period
+                                Low <input id="inputWillrPeriod1" type="text" value="5" style="width: 40px;"> ~
+                                High <input id="inputWillrPeriod2" type="text" value="20" style="width: 40px;">
+                            </div>
+                            <div class="mt-1">
+                                Buy Thread
+                                Low -<input id="inputWillrBuyThread1" type="text" value="85" style="width: 40px;"> ~
+                                High -<input id="inputWillrBuyThread2" type="text" value="75" style="width: 40px;">
+                            </div>
+                            <div class="mt-1">
+                                Sell Thread
+                                Low -<input id="inputWillrSellThread1" type="text" value="35" style="width: 40px;"> ~
+                                High -<input id="inputWillrSellThread2" type="text" value="25" style="width: 40px;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-auto px-0">
+                    <div class="alert alert-success p-1 m-2 text-body" role="alert">
+                        <span class="font-weight-bold">FastStochastic</span>
+                        Events: <span id="StochfEvents"></span>
+                        Signal: <span id="StochfSignal"></span>
+                        NowProfit: <span id="StochfNowProfit"></span>
+                        <div id="StochfParams">
+                            <div class="row justify-content-start">
+                                <div class="col-md-auto pr-0">
+                                    <div>
+                                        Fastk Period
+                                        Low <input id="inputStochfFastkPeriod1" type="text" value="5"
+                                            style="width: 40px;"> ~
+                                        High <input id="inputStochfFastkPeriod2" type="text" value="15"
+                                            style="width: 40px;">
+                                    </div>
+                                    <div class="mt-1">
+                                        Fastd Thread
+                                        Low<input id="inputStochfFastdPeriod1" type="text" value="2"
+                                            style="width: 40px;"> ~
+                                        High <input id="inputStochfFastdPeriod2" type="text" value="10"
+                                            style="width: 40px;">
+                                    </div>
+                                </div>
+                                <div class="col-md-auto pl-1">
+                                    <div>
+                                        Buy Thread
+                                        Low <input id="inputStochfBuyThread1" type="text" value="75"
+                                            style="width: 40px;"> ~
+                                        High <input id="inputStochfBuyThread2" type="text" value="85"
+                                            style="width: 40px;">
+                                    </div>
+                                    <div class="mt-1">
+                                        Sell Thread
+                                        Low <input id="inputStochfSellThread1" type="text" value="25"
+                                            style="width: 40px;">
+                                        ~
+                                        High <input id="inputStochfSellThread2" type="text" value="35"
+                                            style="width: 40px;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="alert alert-success p-1 m-2 text-body" role="alert">
+                        <span class="font-weight-bold">SlowStochastic</span>
+                        Events: <span id="StochEvents"></span>
+                        Signal: <span id="StochSignal"></span>
+                        NowProfit: <span id="StochNowProfit"></span>
+                        <div id="StochParams">
+                            <div class="row justify-content-start">
+                                <div class="col-md-auto pr-0">
+                                    <div>
+                                        Fastk Period
+                                        Low <input id="inputStochFastkPeriod1" type="text" value="5"
+                                            style="width: 40px;"> ~
+                                        High <input id="inputStochFastkPeriod2" type="text" value="15"
+                                            style="width: 40px;">
+                                    </div>
+                                    <div class="mt-1">
+                                        Slowk Period
+                                        Low <input id="inputStochSlowkPeriod1" type="text" value="2"
+                                            style="width: 40px;"> ~
+                                        High <input id="inputStochSlowkPeriod2" type="text" value="10"
+                                            style="width: 40px;">
+                                    </div>
+                                    <div class="mt-1">
+                                        Slowd Thread
+                                        Low<input id="inputStochSlowdPeriod1" type="text" value="2"
+                                            style="width: 40px;"> ~
+                                        High <input id="inputStochSlowdPeriod2" type="text" value="10"
+                                            style="width: 40px;">
+                                    </div>
+                                </div>
+                                <div class="col-md-auto pl-1">
+                                    <div>
+                                        Buy Thread
+                                        Low <input id="inputStochBuyThread1" type="text" value="75"
+                                            style="width: 40px;"> ~
+                                        High <input id="inputStochBuyThread2" type="text" value="85"
+                                            style="width: 40px;">
+                                    </div>
+                                    <div class="mt-1">
+                                        Sell Thread
+                                        Low <input id="inputStochSellThread1" type="text" value="25"
+                                            style="width: 40px;"> ~
+                                        High <input id="inputStochSellThread2" type="text" value="35"
+                                            style="width: 40px;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="indicator">
-                <div>
-                    RSI 
-                    Events: <span id="RsiEvents"></span>
-                    Signal: <span id="RsiSignal"></span> 
-                    NowProfit: <span id="RsiNowProfit"></span>
-                    <div id="RsiParams">
-                        <div>
-                            Period
-                            Low <input id="inputRsiPeriod1" type="text" value=5 style="width: 40px;"> ~
-                            High <input id="inputRsiPeriod2" type="text" value="20" style="width: 40px;">
-                        </div>
-                        <div>
-                            Buy Thread
-                            Low<input id="inputRsiBuyThread1" type="text" value="25" style="width: 40px;"> ~
-                            High <input id="inputRsiBuyThread2" type="text" value="35" style="width: 40px;">
-                        </div>
-                        <div>
-                            Sell Thread
-                            Low<input id="inputRsiSellThread1" type="text" value="75" style="width: 40px;"> ~
-                            High <input id="inputRsiSellThread2" type="text" value="85" style="width: 40px;">
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    MACD 
-                    Events: <span id="MacdEvents"></span>
-                    Signal: <span id="MacdSignal"></span> 
-                    NowProfit: <span id="MacdNowProfit"></span>
-                    <div id="MacdParams">
-                        <div>
-                            Fast Period
-                            Low <input id="inputMacdFastPeriod1" type="text" value="5" style="width: 40px;"> ~
-                            High <input id="inputMacdFastPeriod2" type="text" value="15" style="width: 40px;">
-                        </div>
-                        <div>
-                            Slow Period
-                            Low<input id="inputMacdSlowPeriod1" type="text" value="20" style="width: 40px;"> ~
-                            High <input id="inputMacdSlowPeriod2" type="text" value="30" style="width: 40px;">
-                        </div>
-                        <div>
-                            Signal Period
-                            Low<input id="inputMacdSignalPeriod1" type="text" value="5" style="width: 40px;"> ~
-                            High <input id="inputMacdSignalPeriod2" type="text" value="15" style="width: 40px;">
-                        </div>
-                    </div>
-                </div>
+            <div id="dashboard">
+                <div id="chart_div"></div>
+                <div id="technical_div"></div>
+                <div id="filter_div"></div>
             </div>
-            <div class="indicator">
-                <div>
-                    Williams%R 
-                    Events: <span id="WillrEvents"></span>
-                    Signal: <span id="WillrSignal"></span> 
-                    NowProfit: <span id="WillrNowProfit"></span>
-                    <div id="WillrParams">
-                        <div>
-                            Period
-                            Low <input id="inputWillrPeriod1" type="text" value="5" style="width: 40px;"> ~
-                            High <input id="inputWillrPeriod2" type="text" value="20" style="width: 40px;">
-                        </div>
-                        <div>
-                            Buy Thread
-                            Low -<input id="inputWillrBuyThread1" type="text" value="85" style="width: 40px;"> ~
-                            High -<input id="inputWillrBuyThread2" type="text" value="75" style="width: 40px;">
-                        </div>
-                        <div>
-                            Sell Thread
-                            Low -<input id="inputWillrSellThread1" type="text" value="35" style="width: 40px;"> ~
-                            High -<input id="inputWillrSellThread2" type="text" value="25" style="width: 40px;">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="indicator">
-                <div>
-                    Fast Stochastic 
-                    Events: <span id="StochfEvents"></span>
-                    Signal: <span id="StochfSignal"></span> 
-                    NowProfit: <span id="StochfNowProfit"></span>
-                    <div id="StochfParams">
-                        <div>
-                            Fastk Period
-                            Low <input id="inputStochfFastkPeriod1" type="text" value="5" style="width: 40px;"> ~
-                            High <input id="inputStochfFastkPeriod2" type="text" value="15" style="width: 40px;">
-                        </div>
-                        <div>
-                            Fastd Thread
-                            Low<input id="inputStochfFastdPeriod1" type="text" value="2" style="width: 40px;"> ~
-                            High <input id="inputStochfFastdPeriod2" type="text" value="10" style="width: 40px;">
-                        </div>
-                        <div>
-                            Buy Thread
-                            Low <input id="inputStochfBuyThread1" type="text" value="75" style="width: 40px;"> ~
-                            High <input id="inputStochfBuyThread2" type="text" value="85" style="width: 40px;">
-                        </div>
-                        <div>
-                            Sell Thread
-                            Low <input id="inputStochfSellThread1" type="text" value="25" style="width: 40px;"> ~
-                            High <input id="inputStochfSellThread2" type="text" value="35" style="width: 40px;">
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    Slow Stochastic 
-                    Events: <span id="StochEvents"></span>
-                    Signal: <span id="StochSignal"></span> 
-                    NowProfit: <span id="StochNowProfit"></span>
-                    <div id="StochParams">
-                        <div>
-                            Fastk Period
-                            Low <input id="inputStochFastkPeriod1" type="text" value="5" style="width: 40px;"> ~
-                            High <input id="inputStochFastkPeriod2" type="text" value="15" style="width: 40px;">
-                        </div>
-                        <div>
-                            Slowk Period
-                            Low <input id="inputStochSlowkPeriod1" type="text" value="2" style="width: 40px;"> ~
-                            High <input id="inputStochSlowkPeriod2" type="text" value="10" style="width: 40px;">
-                        </div>
-                        <div>
-                            Slowd Thread
-                            Low<input id="inputStochSlowdPeriod1" type="text" value="2" style="width: 40px;"> ~
-                            High <input id="inputStochSlowdPeriod2" type="text" value="10" style="width: 40px;">
-                        </div>
-                        <div>
-                            Buy Thread
-                            Low <input id="inputStochBuyThread1" type="text" value="75" style="width: 40px;"> ~
-                            High <input id="inputStochBuyThread2" type="text" value="85" style="width: 40px;">
-                        </div>
-                        <div>
-                            Sell Thread
-                            Low <input id="inputStochSellThread1" type="text" value="25" style="width: 40px;"> ~
-                            High <input id="inputStochSellThread2" type="text" value="35" style="width: 40px;">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div id="dashboard">
-            <div id="chart_div"></div>
-            <div id="technical_div"></div>
-            <div id="filter_div"></div>
         </div>
     </body>
 

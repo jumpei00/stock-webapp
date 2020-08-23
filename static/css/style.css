@@ -1,17 +1,5 @@
-.tech {
-    display: inline-block;
-    vertical-align: top;
-    margin: 0px 10px;
-}
-
-.indicator {
-    display: inline-block;
-    vertical-align: top;
-    margin: 0px 10px;
-}
-
 #dashboard_div {
-    width: 600px;
+    width: 550px;
     border: 1px solid #ccc;
 }
 

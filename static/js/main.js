@@ -360,10 +360,6 @@ function drawChart(dataTable) {
         }
     });
 
-    console.log(options)
-    console.log(view)
-    console.log(charts)
-
     dashboard.bind(controlWrapper, charts);
     dashboard.draw(dataTable);
 }

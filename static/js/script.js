@@ -23,6 +23,10 @@ class StockGet {
 class BackTest {
     go() {
         $('#backtestGo').on('click', function () {
+            $('#backtestGo').append(
+                '<span id="spinner" class="spinner-border" ' +
+                'role="status" aria-hidden="true"></span>')
+            
             var stockcode = $('#inputCode').val();
             var duration = $('#inputDuration').val();
             if (stockcode == config.candlestick.stockcode) {
@@ -39,6 +43,8 @@ class BackTest {
                 send()
                 trade()
             }
+
+            $('#spinner').remove()
         })
     }
 

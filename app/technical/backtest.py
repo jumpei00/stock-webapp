@@ -49,7 +49,7 @@ class Ema(object):
             if day == len(self.candles) - 1 and backtest:
                 continue
 
-            if ema_value_short[day - 1] < ema_value_long[day - 1] and ema_value_short[day] > ema_value_long[day]:
+            if ema_value_short[day - 1] < ema_value_long[day - 1] and ema_value_short[day] >= ema_value_long[day]:
                 if day == len(self.candles) - 1:
                     signal_date = self.candles[day].date
                     traded_date = None
@@ -66,7 +66,7 @@ class Ema(object):
                     price=price,
                     save=save
                 )
-            elif ema_value_short[day - 1] > ema_value_long[day - 1] and ema_value_short[day] < ema_value_long[day]:
+            elif ema_value_short[day - 1] > ema_value_long[day - 1] and ema_value_short[day] <= ema_value_long[day]:
                 if day == len(self.candles) - 1:
                     signal_date = self.candles[day].date
                     traded_date = None
@@ -153,7 +153,7 @@ class BBands(object):
                     save=save
                 )
 
-            elif bb_down[day - 1] < self.candles[day - 1].close and bb_down[day] >= self.candles[day].close:
+            elif bb_up[day - 1] < self.candles[day - 1].close and bb_up[day] >= self.candles[day].close:
                 if day == len(self.candles) - 1:
                     signal_date = self.candles[day].date
                     traded_date = None
@@ -196,7 +196,7 @@ class BBands(object):
         logger.info(
             '<action=BBands->>optimization>: BBands backtest and params optimization End')
 
-        return performance, best_n, best_k
+        return performance, best_n, round(best_k, 1)
 
 
 class Ichimoku(object):
@@ -484,7 +484,7 @@ class Willr(object):
             signal_event_controller.delete(code=self.code)
 
         values = talib.WILLR(
-            np.asarray(self.highs), np.asarray(self.lows), np.asarray(self.closes))
+            np.asarray(self.highs), np.asarray(self.lows), np.asarray(self.closes), period)
 
         for day in range(1, len(self.candles)):
             if values[day - 1] == 0 or values[day - 1] == -100:
@@ -588,7 +588,8 @@ class Stochf(object):
             if day == len(self.candles) - 1 and backtest:
                 continue
 
-            if fastk[day - 1] < fastd[day - 1] and fastk[day] >= fastd[day] and fastd[day] < buy_thread:
+            if fastk[day - 1] < fastd[day - 1] and fastk[day] >= fastd[day] and \
+                    fastk[day] <= buy_thread and fastd[day] <= buy_thread:
                 if day == len(self.candles) - 1:
                     signal_date = self.candles[day].date
                     traded_date = None
@@ -606,7 +607,8 @@ class Stochf(object):
                     save=save
                 )
 
-            elif fastk[day - 1] > fastd[day - 1] and fastk[day] <= fastd[day] and fastd[day] > sell_thread:
+            elif fastk[day - 1] > fastd[day - 1] and fastk[day] <= fastd[day] and \
+                    fastk[day] > sell_thread and fastd[day] > sell_thread:
                 if day == len(self.candles) - 1:
                     signal_date = self.candles[day].date
                     traded_date = None
@@ -688,7 +690,8 @@ class Stoch(object):
             if day == len(self.candles) - 1 and backtest:
                 continue
 
-            if slowk[day - 1] < slowd[day - 1] and slowk[day] >= slowd[day] and slowd[day] < buy_thread:
+            if slowk[day - 1] < slowd[day - 1] and slowk[day] >= slowd[day] and \
+                    slowk[day] < buy_thread and slowd[day] < buy_thread:
                 if day == len(self.candles) - 1:
                     signal_date = self.candles[day].date
                     traded_date = None
@@ -706,7 +709,8 @@ class Stoch(object):
                     save=save
                 )
 
-            elif slowk[day - 1] > slowd[day - 1] and slowk[day] <= slowd[day] and slowd[day] > sell_thread:
+            elif slowk[day - 1] > slowd[day - 1] and slowk[day] <= slowd[day] and \
+                    slowk[day] > sell_thread and slowd[day] > sell_thread:
                 if day == len(self.candles) - 1:
                     signal_date = self.candles[day].date
                     traded_date = None

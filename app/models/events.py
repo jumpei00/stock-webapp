@@ -133,8 +133,8 @@ class SignalEventController(object):
                 is_holding = False
                 before_sell = total
         if is_holding:
-            return before_sell
-        return total
+            return round(before_sell, 1)
+        return round(total, 1)
 
     @property
     def value(self):

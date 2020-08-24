@@ -86,8 +86,9 @@
                     </div>
                 </div>
                 <div class="w-100 m-1"></div>
-                <div class="col-md-auto ml-4 mt-1">
-                    <span class="font-weight-bold">BackTest</span> <button id="backtestGo">GO</button>
+                <div id="BackTest" class="col-md-auto ml-4 mt-1">
+                    <span class="font-weight-bold">BackTest</span>
+                    <button id="backtestGo">GO</button>
                     <span class="font-weight-bold">Stock Code: </span><span id="BackTestStockCode">No Test</span>
                     <span class="font-weight-bold">Latest Test Date: </span><span id="BackTestDate">No Date</span>
                 </div>
@@ -102,7 +103,7 @@
                             <div>
                                 Short Period
                                 Low <input id="inputEMAShortPeriod1" type="text" value="2" style="width: 40px;"> ~
-                                High <input id="inputEMAShortPeriod2" type="text" value="15" style="width: 40px;">
+                                High <input id="inputEMAShortPeriod2" type="text" value="20" style="width: 40px;">
                             </div>
                             <div class="mt-1">
                                 Long Period
@@ -119,8 +120,8 @@
                         <div id="BBandsParams">
                             <div>
                                 N
-                                Low <input id="inputBBandsNPeriod1" type="text" value="15" style="width: 40px;"> ~
-                                High <input id="inputBBandsNPeriod2" type="text" value="25" style="width: 40px;">
+                                Low <input id="inputBBandsNPeriod1" type="text" value="10" style="width: 40px;"> ~
+                                High <input id="inputBBandsNPeriod2" type="text" value="30" style="width: 40px;">
                             </div>
                             <div class="mt-1">
                                 K
@@ -146,17 +147,17 @@
                             <div>
                                 Period
                                 Low <input id="inputRsiPeriod1" type="text" value=5 style="width: 40px;"> ~
-                                High <input id="inputRsiPeriod2" type="text" value="20" style="width: 40px;">
+                                High <input id="inputRsiPeriod2" type="text" value="30" style="width: 40px;">
                             </div>
                             <div class="mt-1">
                                 Buy Thread
-                                Low<input id="inputRsiBuyThread1" type="text" value="25" style="width: 40px;"> ~
+                                Low<input id="inputRsiBuyThread1" type="text" value="20" style="width: 40px;"> ~
                                 High <input id="inputRsiBuyThread2" type="text" value="35" style="width: 40px;">
                             </div>
                             <div class="mt-1">
                                 Sell Thread
-                                Low<input id="inputRsiSellThread1" type="text" value="75" style="width: 40px;"> ~
-                                High <input id="inputRsiSellThread2" type="text" value="85" style="width: 40px;">
+                                Low<input id="inputRsiSellThread1" type="text" value="65" style="width: 40px;"> ~
+                                High <input id="inputRsiSellThread2" type="text" value="80" style="width: 40px;">
                             </div>
                         </div>
                     </div>
@@ -171,17 +172,17 @@
                             <div>
                                 Fast Period
                                 Low <input id="inputMacdFastPeriod1" type="text" value="5" style="width: 40px;"> ~
-                                High <input id="inputMacdFastPeriod2" type="text" value="15" style="width: 40px;">
+                                High <input id="inputMacdFastPeriod2" type="text" value="20" style="width: 40px;">
                             </div>
                             <div class="mt-1">
                                 Slow Period
-                                Low<input id="inputMacdSlowPeriod1" type="text" value="20" style="width: 40px;"> ~
+                                Low<input id="inputMacdSlowPeriod1" type="text" value="10" style="width: 40px;"> ~
                                 High <input id="inputMacdSlowPeriod2" type="text" value="30" style="width: 40px;">
                             </div>
                             <div class="mt-1">
                                 Signal Period
                                 Low<input id="inputMacdSignalPeriod1" type="text" value="5" style="width: 40px;"> ~
-                                High <input id="inputMacdSignalPeriod2" type="text" value="15" style="width: 40px;">
+                                High <input id="inputMacdSignalPeriod2" type="text" value="20" style="width: 40px;">
                             </div>
                         </div>
                     </div>
@@ -194,17 +195,17 @@
                             <div>
                                 Period
                                 Low <input id="inputWillrPeriod1" type="text" value="5" style="width: 40px;"> ~
-                                High <input id="inputWillrPeriod2" type="text" value="20" style="width: 40px;">
+                                High <input id="inputWillrPeriod2" type="text" value="30" style="width: 40px;">
                             </div>
                             <div class="mt-1">
                                 Buy Thread
-                                Low -<input id="inputWillrBuyThread1" type="text" value="85" style="width: 40px;"> ~
-                                High -<input id="inputWillrBuyThread2" type="text" value="75" style="width: 40px;">
+                                Low -<input id="inputWillrBuyThread1" type="text" value="80" style="width: 40px;"> ~
+                                High -<input id="inputWillrBuyThread2" type="text" value="65" style="width: 40px;">
                             </div>
                             <div class="mt-1">
                                 Sell Thread
                                 Low -<input id="inputWillrSellThread1" type="text" value="35" style="width: 40px;"> ~
-                                High -<input id="inputWillrSellThread2" type="text" value="25" style="width: 40px;">
+                                High -<input id="inputWillrSellThread2" type="text" value="20" style="width: 40px;">
                             </div>
                         </div>
                     </div>
@@ -236,14 +237,14 @@
                                 <div class="col-md-auto pl-1">
                                     <div>
                                         Buy Thread
-                                        Low <input id="inputStochfBuyThread1" type="text" value="75"
+                                        Low <input id="inputStochfBuyThread1" type="text" value="65"
                                             style="width: 40px;"> ~
-                                        High <input id="inputStochfBuyThread2" type="text" value="85"
+                                        High <input id="inputStochfBuyThread2" type="text" value="80"
                                             style="width: 40px;">
                                     </div>
                                     <div class="mt-1">
                                         Sell Thread
-                                        Low <input id="inputStochfSellThread1" type="text" value="25"
+                                        Low <input id="inputStochfSellThread1" type="text" value="20"
                                             style="width: 40px;">
                                         ~
                                         High <input id="inputStochfSellThread2" type="text" value="35"
@@ -286,14 +287,14 @@
                                 <div class="col-md-auto pl-1">
                                     <div>
                                         Buy Thread
-                                        Low <input id="inputStochBuyThread1" type="text" value="75"
+                                        Low <input id="inputStochBuyThread1" type="text" value="65"
                                             style="width: 40px;"> ~
-                                        High <input id="inputStochBuyThread2" type="text" value="85"
+                                        High <input id="inputStochBuyThread2" type="text" value="80"
                                             style="width: 40px;">
                                     </div>
                                     <div class="mt-1">
                                         Sell Thread
-                                        Low <input id="inputStochSellThread1" type="text" value="25"
+                                        Low <input id="inputStochSellThread1" type="text" value="20"
                                             style="width: 40px;"> ~
                                         High <input id="inputStochSellThread2" type="text" value="35"
                                             style="width: 40px;">

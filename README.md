@@ -33,12 +33,12 @@ implement the following,
 4.Implementation of backtest  
 　→Each parameter is optimized by backtest, a today sign of BUY or SELL is automated    
  
-backtest algorithm is following  
+・backtest algorithm is following  
 a.basktest is conducted by using yesterday data and today data  
 b.if backtest is passed, a profit is eveluated by trading 'open price of next day'  
 ※Only daily data and so this backtest is the algorithm of a, b    
 
-<How to executing>  
+・How to executing  
 Please executing the following command in this repository  
  - docker-compose up  
 ※neccesary of docker install and some knowledge of docker    

@@ -14,7 +14,7 @@ b.バックテストに合格した場合は「翌日の始値」を売買する
 ※日足データのみしかないためこのようなアルゴリズムにしています    
 
 ＜実行方法＞  
-・このレポジトリの中で以下のコマンドを打ちます  
+このレポジトリの中で以下のコマンドを打ちます  
 　- docker-compose up  
 ※dockerのインストール、dockerの多少の知識が必要です    
 
@@ -39,10 +39,10 @@ b.if backtest is passed, a profit is eveluated by trading 'open price of next da
 ※Only daily data and so this backtest is the algorithm of a, b    
 
 <How to executing>  
-・Please executing the following command in this repository  
+Please executing the following command in this repository  
  - docker-compose up  
 ※neccesary of docker install and some knowledge of docker    
 
 !!Caution!!  
 ・Althoug you can conduct backtest by using any number, take time(3~4 minutes)  
-・When this webpage is opened with small window, web design may be collapsed
+・When this webpage is opened with small window, web design may be collapsed  

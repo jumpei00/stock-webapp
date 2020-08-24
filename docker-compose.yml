@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+    stockapp:
+        build: .
+        ports: 
+            - '8080:8080'
+        volumes:
+            - '.:/usr/src/stockapp'
+        command: 'python main.py'

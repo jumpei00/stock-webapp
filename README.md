@@ -4,9 +4,10 @@
 １.Flaskを用いたローカル環境での実装、実行
 2.日足データの可視化(グラフ化)、分析
 3.Ta-Libを用いたテクニカル分析
-　→SMA,EMA,BBands,Ichimoku,RSI,MACD,William%R,FastStochastics,SlowStochasticsを実装しています
+→SMA,EMA,BBands,Ichimoku,RSI,MACD,William%R,
+ FastStochastics,SlowStochasticsを実装しています
 4.バックテストの実装
-　→バックテストで各パラメーターの最適化を行い、当日の売り買いのサインを自動化しました。
+→バックテストで各パラメーターの最適化を行い、当日の売り買いのサインを自動化しました。
 
 バックテストのアルゴリズムは以下のようになっています。
 a.前日と当日のデータを元にしてテスト

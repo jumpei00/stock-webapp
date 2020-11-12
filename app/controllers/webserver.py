@@ -32,7 +32,7 @@ def index():
 
 
 def run():
-    app.run(host='0.0.0.0', port=settings.web_port, threaded=True)
+    app.run(host=settings.web_ip, port=settings.web_port, threaded=True)
 
 
 @app.route('/candle', methods=['GET'])

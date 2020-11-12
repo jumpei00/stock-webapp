@@ -3,7 +3,7 @@ google.charts.load('current', { 'packages': ['corechart', 'controls'] });
 var config = {
     candlestick: {
         status: true,
-        stockcode: '1570',
+        stockcode: 'VOO',
         duration: '365',
         numViews: 5,
     },

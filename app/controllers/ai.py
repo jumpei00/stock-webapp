@@ -10,6 +10,7 @@ from app.models.dfcandles import DataFrameCandle
 from app.technical.backtest import BackTestingSerializer
 from app.models.events import SignalEventController
 import constants
+import settings
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +19,7 @@ class AI(object):
     def __init__(self, code):
         self.code = code
         self.cpu_count_num = cpu_count()
-        self.df = DataFrameCandle(code=self.code)
+        self.df = DataFrameCandle(code=self.code, duration=settings.duration_backtest)
         self.back_test_params = self.df.back_test_params.get_params
         self.backtest_serializer = BackTestingSerializer(
             code=self.code, candles=self.df.candles,
